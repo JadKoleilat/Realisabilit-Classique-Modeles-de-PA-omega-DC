@@ -1,0 +1,1063 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{a4wide}
+\usepackage{mathrsfs}
+\usepackage{stmaryrd}
+\usepackage{mathtools}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{titling}
+\usepackage{hyperref}
+\usepackage{faktor}
+\usepackage{ebproof}
+\usepackage{MnSymbol}
+\usepackage[nottoc, notlof, notlot]{tocbibind}
+
+\newtheorem{theo}{Theorem}[subsection]
+\newtheorem{prop}[theo]{Proposition}
+\newtheorem{defi}[theo]{Definition}
+\newtheorem{coro}[theo]{Corollary}
+\newtheorem{lem}[theo]{Lemma}
+
+\newtheoremstyle{rmqstyle} % name
+    {\topsep}                    % Space above
+    {\topsep}                    % Space below
+    { }                   % Body font
+    {}                           % Indent amount
+    {\bfseries}                   % Theorem head font
+    {.}                          % Punctuation after theorem head
+    {.5em}                       % Space after theorem head
+    { }  % Theorem head spec (can be left empty, meaning ‘normal’)
+
+\theoremstyle{rmqstyle}
+\newtheorem{rmq}[theo]{Remark}
+\newtheorem{rmqs}[theo]{Remarks}
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\abs}[1]{\lvert#1\rvert}
+\newcommand{\abss}[1]{\lvert \lvert#1\rvert \rvert}
+\newcommand{\itp}[1]{\left\llbracket#1\right\rrbracket}
+\newcommand{\infi}{\bigwedge}
+\newcommand{\QP}{\mathrm{QP}}
+\newcommand{\fundef}[3]{#1: \left\{\begin{array}{ccc}#2\\#3\end{array}\right.}
+\newcommand{\fundefdef}[3]{#1:= \left\{\begin{array}{ccc}#2\\#3\end{array}\right.}
+\newcommand{\supr}{\bigvee}
+\newcommand{\PA}{\mathrm{PA}}
+\renewcommand{\int}{\mathbf{Int}}
+\newcommand{\rec}{\mathbf{rec}}
+\renewcommand{\implies}{\Rightarrow}
+\renewcommand{\P}{\mathfrak{P}}
+\renewcommand{\iff}{\Leftrightarrow}
+\newcommand{\quotient}[2]{{\raisebox{.2em}{$#1$}\left/\raisebox{-.2em}{$#2$}\right.}}
+\newcommand{\cc}{\mathbf{cc}}
+\renewcommand{\k}{\mathbf{k}}
+\newcommand{\type}{\mathrm{Type}}
+\newcommand{\rbeta}{\longrightarrow_\beta}
+\newcommand{\pole}{{\protect\mathpalette{\protect\polehelper}{\bot}}} \def\polehelper#1#2{\mathrel{\rlap{$#1#2$}\mkern3mu{#1#2}}}
+\newcommand{\Th}{\mathrm{Th}}
+\newcommand{\pthread}{\pole_{\mathrm{th}}}
+\newcommand{\Kri}[1]{\underline{#1}}
+\renewcommand{\bar}{\overline}
+\renewcommand{\quote}{\mathbf{quote}}
+\newcommand{\QNEAC}{\mathrm{QNEAC}}
+\newcommand{\NEAC}{\mathrm{NEAC}}
+\newcommand{\DC}{\mathrm{DC}}
+
+
+\begin{document}
+
+\begin{titlepage}
+\title{Classical Realizability :\\
+Models of $\PA_\omega + \DC$} 
+\author{Jad Koleilat, under the supervision of Guillaume Geoffroy}
+\date{June 2023, translated to English November 2023}
+\maketitle
+\center{Université Paris Cité}
+\thispagestyle{empty}
+\end{titlepage}
+
+\vspace*{\fill}
+I warmly thank Mr. Geoffroy for allowing me to carry out this project with him as well as for all the help and support he provided me.
+\vspace*{\fill}
+\thispagestyle{empty}
+\clearpage
+
+\tableofcontents
+\thispagestyle{empty}
+
+\clearpage
+
+\pagenumbering{arabic}
+
+\setcounter{secnumdepth}{0}
+
+\section{Introduction}
+\label{introduction}
+
+There are several notions of realizability, which share the idea of associating with each formula of a given system a set of elements. These elements represent, in a certain way, the computational content of the formulas. These notions of realizability are tools that allow the study of logical systems. In this dissertation, we will focus on the concept of classical realizability as developed in the articles by Krivine \cite{KrivineRC} \cite{KrivineRA2}. Classical realizability will be used to study higher-order arithmetic: $\PA_\omega$. $\PA_\omega$ is a type theory that extends $\PA$ by allowing the construction of predicates on integers, parts of integers, parts of parts of integers...
+
+Initially, we will provide an overview of classical realizability, and then we will define the system $\PA_\omega$ and demonstrate that it can be endowed with a certain structure referred to as a realizability model. Our goal will be to construct a realizability model for $\PA_\omega$, in which the dependent choice axiom, $\DC$, is within the theory of every pole (a notion that we will define subsequently).
+
+The presentation we give for $\PA_\omega$ is heavily inspired by Miquel's article \cite{MiquelF} and uses a proof system inspired by Geoffroy's article \cite{Geof}. The proposed construction of a realizability model for $\PA_\omega$ is based on that presented in \cite{MiquelF}, modified to correspond to the proof system we use. Much of the results shown are inspired by similar results in Krivine's articles \cite{KrivineRC} \cite{KrivineRA2}. The proof of the realization of $\DC$, although inspired by those given in Krivine's articles, is new because we demonstrate that $\PA_\omega$ proves that the non-extensional axiom of choice implies dependent choice. We will work within $\mathrm{ZFC}$.
+
+\clearpage
+
+\setcounter{secnumdepth}{3}
+
+\section{Classical Realizability : Definition}
+
+We will give a presentation of classical realizability, which will be followed by a simple example.
+
+\subsection{Krivine machines and Poles}
+
+\begin{defi}[Terms and Stacks]
+\label{termes et piles}
+Let us consider disjoints sets of symbols:
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item An infinite set $\mathcal{V}$ called the set of variables.\\
+\item $\Pi_0$ the set of stack constants, that contains at least the symbol $\epsilon$\footnote{Called the empty stack.}.\\
+\item $\mathcal{I}$ the set of instructions, that contains at least the symbol $\cc$\footnote{This symbol is the acronyme of "call-with-current-continuation".}.
+\end{itemize}
+We define my mutual induction the set of terms $\Lambda$, of stacks $\Pi$ and the notion of free variable $\mathrm{FV}$:
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item if $x \in \mathcal{V}$ then $x \in \Lambda$ and $\mathrm{FV}(x) := \set{x}$.\\
+\item if $a \in \mathcal{I}$ then $a \in \Lambda$ et $\mathrm{FV}(a) := \varnothing$.\\
+\item if $\xi \in \Pi_0$ then $\xi \in \Pi$.\\
+\item if $t \in \Lambda$, $t$ is closed and $\pi \in \Pi$ then $t \cdot \pi \in \Pi$.\\
+\item if $t \in \Lambda$ and $x \in \mathcal{V}$ then $\lambda x. t \in \Lambda$ then $\mathrm{FV}(\lambda x. t) := \mathrm{FV}(t) \backslash \set{x}$.\\
+\item if $t,u \in \Lambda$ then $(t)u \in \Lambda$ and $\mathrm{FV}((t)u) := \mathrm{FV}(t) \cup \mathrm{FV}(u)$. \\
+\item if $\pi \in \Pi$ then $\k_\pi\footnote{Called continuation constants.} \in \Lambda$ et $\mathrm{FV}(\k_\pi) := \varnothing$.
+\end{itemize}
+We denote by $\Lambda_c$ the set of closed terms (ie $\Lambda_c := \set{ t \in \Lambda \mid \mathrm{FV}(t) = \varnothing}$), we call $\lambda_c$-terms the elements of $\Lambda_c$.
+\end{defi}
+
+We have introduced for each stack $\pi$ a particular symbol $\k_\pi$ which we suppose not belonging to the previously defined sets. We also make this same hypothesis for the symbols $\lambda, (,),.$ and $\cdot$. In the following we will use the usual parenthesizing conventions. The freedom we gave ourselves concerning the choice of $\Pi_0$ and $\mathcal{I}$ will allow us to adapt to the theory we wish to study.\\
+
+We will now endow the sets $\Lambda$ and $\Pi$ with a structure that justifies the idea of computation.
+
+\begin{defi}[Krivine Machine]
+Let $\Lambda$ and $\Pi$ respectively a set of terms and stacks as previously defined  \ref{termes et piles}.\\
+Let $\Lambda \star \Pi := \Lambda_c \times \Pi$ the set of processes. We denote by  $t \star \pi$ elements of  $\Lambda \star \Pi$.\\
+A Krivine machine on $\Lambda$ and $\Pi$ is the data of a binary relation $\succ_1$ on $\Lambda \star \Pi$ such that for all $t,u \in \Lambda_c$ and for all $\pi, \pi_1, \pi_2 \in \Pi$ : 
+\begin{align*}
+&\textit{(Push)}& &(t)u \star \pi \succ_1 t \star u \cdot \pi&\\
+&\textit{(Grab)}& &(\lambda x. t) \star u \cdot \pi \succ_1 t[x := u]\footnotemark \star \pi&\\
+&\textit{(Save)}& &\cc \star t \cdot \pi \succ_1 (t) \k_\pi \star \pi&\\
+&\textit{(Restore)}& &\k_{\pi_1} \star t \cdot \pi_2 \succ_1 t \star \pi_1&
+\end{align*}
+\footnotetext{It's the substitution modulo $\alpha$-equivalence.}
+We call \textit{(Push)}, \textit{(Grab)}, \textit{(Save)} and \textit{(Restore)} execution rules (we will introduce other ones later). To each Krivine machine $\succ_1$ we associate the preorder generated denoted $\succ$, we will often identify Krivine machines and the associated preorder. The minimal Krivine machine on a set of executions rules is the smallest binary relation $\succ_1$ satisfying the execution rules. If the rules are not given explicitly it will always be assumed that we are talking about the minimal Krivine machine on \textit{(Push)}, \textit{(Grab)}, \textit{(Save)} and \textit{(Restore)}.
+\end{defi}
+
+The \textit{(Push)} and \textit{(Grab)} rules allow modeling weak head $\beta$-reduction. The choice of weak head $\beta$-reduction instead of full $\beta$-reduction is due to the desire for determinism in the machine. Moreover, full $\beta$-reduction is incompatible with certain executions rules, notably the \textit{(Evaluation)} rule introduced in Section \ref{sec 2}.\\
+The \textit{(Save)} and \textit{(Grab)} rules, on the other hand, allow modeling classical logic. We will see this in action during the proof of theorem \ref{ade}.
+
+\begin{defi}[Krivine's integers]
+We define Krivine's integers \footnote{Krivine's integers will always be underline.} by induction:
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item $\Kri{0} := \lambda f. \lambda x. x$ is Krivine's 0 integer.\\
+\item if $\Kri{n}$ is a Krivine's integer then $\Kri{s} \Kri{n}$ is the $n+1^{\text{th}}$ Krivine's integer, were $\Kri{s} := \lambda n. \lambda f. \lambda x. nf(fx)$
+\end{itemize}
+\end{defi}
+
+Given that we do not have access to the full $\beta$-reduction, terms of the form $\Kri{s} \Kri{n}$ will not reduce to the Church integer $n+1$. Hence, our definition is slightly different.
+
+\begin{defi}[Pole]
+Let $\succ$ be any Krivine machine on $\Lambda \star \Pi$, a set of processes. A pole $\pole$ for this machine is a subset of processes that satisfies the saturation property:
+ $$\forall t_1, t_2 \in \Lambda_c, \forall \pi_1, \pi_2 \in \Pi, \ [(t_1 \star \pi_1 \succ t_2 \star \pi_2) \land  (t_2 \star \pi_2 \in \pole)] \implies t_1 \star \pi_1 \in \pole$$
+\end{defi}
+
+We will now see an example that illustrates in a simple manner how to use realizability to study a system.
+
+\clearpage
+\subsection{Example}
+
+Let $\mathcal{V}$ a set of variables. Let us consider the following system:
+
+$$
+\begin{prooftree}[center=false]
+\infer0{1 \in \type}
+\end{prooftree}
+\qquad
+\begin{prooftree}[center=false]
+\hypo{A \in \type \quad B \in \type}
+\infer1{A \to B \in \type}
+\end{prooftree}
+$$
+\vspace{0.5 em}
+$$
+\begin{prooftree}[center=false]
+\infer0{\Gamma \vdash 0 : 1}
+\end{prooftree}
+\qquad
+\begin{prooftree}[center=false]
+\hypo{\Gamma, x : A \vdash t : B}
+\infer1{\Gamma \vdash \lambda x.t : A \to B}
+\end{prooftree}
+\qquad
+\begin{prooftree}[center=false]
+\infer0{\Gamma, x : A \vdash x : A}
+\end{prooftree}
+$$
+\vspace{0.5 em}
+$$
+\begin{prooftree}[center=false]
+\hypo{\Gamma \vdash t : A \to B \quad \Gamma \vdash u : B}
+\infer1{\Gamma \vdash (t)u : B}
+\end{prooftree}
+$$
+
+\paragraph{Notations:} We denote by $\rbeta$ the full $\beta$-reduction and $\rbeta^*$ the weak head $\beta$-reduction.\\
+
+We aim to show, using realizability, that for every term $t$ such that $\vdash t : 1$ is derivable, we have $t \rbeta^* 0$.\\
+
+Let's begin by defining terms and stacks. Let $\Lambda$ and $\Pi$ be the sets of terms and stacks, respectively, defined by $\Pi_0 := \set{\epsilon}$ and $\mathcal{I} := \set{\cc, 0}$. The addition of the symbol $0$ allows capturing in $\Lambda$ the set of terms in the theory: all terms in the theory are in $\Lambda$, but the converse is false due to the symbols $\cc$ and $\k$. Let $\succ$ be the minimal Krivine machine.
+We define a pole $\pole := \set{ t \star \pi \in \Lambda \star \Pi \mid t \star \pi \succ 0 \star \epsilon}$ (we easily verify saturation).\\
+
+Now, we will use the pole to associate to each type a set of $\lambda_c$-terms that we will call truth values. If $A$ is a type, we denote by $\abs{A}$ the truth values of $A$. We define truth values based on a set of stacks called falsity values, denoted as $\abss{A}$.
+
+\begin{defi}[Truth values]
+Let $A$ be a type and $\abss{A} \subseteq \Pi$ its falsity values. We defined as follows the truth values of $A$:
+$$\abs{A} := \abss{A}^\pole \footnote{We read it "the orthogonal of $\abss{A}$ relative to the pole $\pole$". The "ortogonal" notation makes sense because the biger the set of falseness values the smaller the set of truths values and reciprocally.} := \set{ t \in \Lambda_c \mid \forall \pi \in \abss{A}, \ t \star \pi \in \pole}$$
+We write $t \Vdash A$ for $t \in \abs{A}$ and we read it "$t$ realizes $A$".
+\end{defi}
+
+What is left now is to associate falsity values to each type:
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item $\abss{1} := \set{\epsilon}$\\
+\item if $A$ and $B$ are types then $\abss{A \to B} := \abs{A} \cdot \abss{B}
+ := \set{ t \cdot \pi \in \Pi \mid t \in \abs{A} \text{ and } \pi \in \abss{B}}$
+\end{itemize}
+
+Hence, $\abs{1} := \set{t \in \Lambda_c \mid \forall \pi \in \abss{1}, \ t \star \pi \in \pole} = \set{t \in \Lambda_c \mid t \star \epsilon \succ 0 \star \epsilon}$.
+
+\begin{lem}
+\label{lem_beta}
+Let $t, u \in \Lambda_c$ not containing $\cc$ or $\k$ as subterms, if $t \star \epsilon \succ u \star \epsilon$ then $t \rbeta^* u$.
+\end{lem}
+
+\begin{proof}
+If $t = u$, then the property is true. If not, since $t$ does not contain $\cc$ and $\k_\pi$ as subterms, the only applicable execution rules are \textit{(Push)} and \textit{(Grab)}. The sequence of execution rules that yields $u \star \epsilon$ from $t \star \epsilon$ can only be formed by successive applications of \textit{(Push)} and \textit{(Grab)}, which corresponds exactly to steps of weak head $\beta$-reduction, thus concluding.
+\end{proof}
+
+Showing that if $\vdash t : 1$ is  derivable then $t \Vdash 1$, is enough to conclude. If $t \Vdash 1$, by definition it means that $t \star \epsilon \succ 0 \star \epsilon$ which implies $t \rbeta^* 0$ by the lemma \ref{lem_beta}.\\
+
+We will show a stronger property, which is the adequacy property\footnote{We will use a slightly different definition of the adequacy property later on}: if $x_1 : A_1, \dots, x_n : A_n \vdash t : A$ is derivable, then $(u_1 \Vdash A_1 \land \dots \land u_n \Vdash A_n) \implies t[\bar{x} := \bar{u}]\footnote{$t[ \bar{x} := \bar{u}]$ denotes the substitution modulo $\alpha$-equivalence of $x_1, \dots, x_n$ by $u_1, \dots, u_n$, respectively.} \Vdash A$, for $x_1, \dots, x_n$ variables and $u_1, \dots, u_n$ $\lambda_c$-terms. We prove this by induction on the structure of derivations:
+
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item $\vdash 0 : 1$ is derivable, and $0 \Vdash 1$.\\
+
+\item $x : A \vdash x : A$ is derivable. If $u \Vdash A$, then $u = x[x := u] \Vdash A$.\\
+
+\item Let $x_1 : C_1, \dots, x_n : C_n \vdash t : A \to B$ and $x_1 : C_1, \dots, x_n : C_n \vdash u : A$ be derivable, and suppose $v_1 \Vdash C_1, \dots, v_n \Vdash C_n$. By the induction hypothesis, $t[ \bar{x} := \bar{v}] \Vdash A \to B$ and $u[\bar{x} := \bar{v}] \Vdash A$. We want to show that $(tu)[\bar{x} := \bar{v}] \Vdash B$. Unfolding the definition, we get:
+$$\forall a \in \abs{A}, \forall \pi \in \abss{B}, \ t[\bar{x} := \bar{v}] \star a \cdot \pi \in \pole$$
+In particular,
+$$ \forall \pi \in \abss{B}, \ t[\bar{x} := \bar{v}] \star u[\bar{x} := \bar{v}] \cdot \pi \in \pole$$
+Using the \textit{(Push)} rule, we observe that
+$$\forall \pi \in \abss{B}, \ (t[\bar{x} := \bar{v}])u[\bar{x} := \bar{v}] \star \pi \succ t[\bar{x} := \bar{v}] \star u[\bar{x} := \bar{v}] \cdot \pi$$
+Saturation and substitution properties give us
+$$\forall \pi \in \abss{B}, \ (tu)[\bar{x} := \bar{v}] \star \pi \in \pole$$
+
+\item Suppose $x_1 : A_1, \dots, x_n : A_n, y : A \vdash t : B$ is derivable, where $y$ is a variable, and suppose $u_1 \Vdash A_1, \dots, u_n \Vdash A_n$. Let $t' \in \abs{A}$ and $\pi \in \abss{B}$. We want to show that $(\lambda y.t)[\bar{x} := \bar{u}] \star t' \cdot \pi \in \pole$ (i.e., $(\lambda y.t)[\bar{x} := \bar{u}] \Vdash A \to B$).\\
+The \textit{(Grab)} rule gives us:
+$$(\lambda y.t)[\bar{x} := \bar{u}] \star t' \cdot \pi \succ  t[\bar{x} := \bar{u}][y := t'] \star \pi $$
+Using that $t' \Vdash A$ and the induction hypothesis, we get:
+$$t[\bar{x} := \bar{u}][y := t'] = t[\bar{x} := \bar{u}, y := t'] \Vdash B$$
+Therefore,
+$$(\lambda y.t)[\bar{x} := \bar{u}] \star t' \cdot \pi \succ  t[\bar{x} := \bar{u}, y := t'] \star \pi \in \pole$$
+Through saturation, we obtain the desired result. This concludes the proof of adequacy.
+\end{itemize}
+
+\begin{rmqs} The key property is adequacy, which is essential to any notion of realizability.\\
+In the (simple) case of this system, the terms $\cc$ and $\k$ do not play a role. This is predictable because they are used to model classical logic, whereas the system studied here is intuitionistic.\\
+In a scenario where adequacy holds, demonstrating the consistency of a system can be donne by showing that the truth value set of $\bot$ is empty (i.e., $\abs{\bot} = \varnothing$). Indeed, if there exists a term $t$ such that $\vdash t : \bot$ is derivable, by adequacy, $t \Vdash \bot$, and therefore $\abs{\bot} \neq \varnothing$.\end{rmqs}
+
+\clearpage
+
+\section{Realization of \( \PA_\omega +  \DC\)}
+\label{sec 2}
+
+\subsection{Definition of \( \PA_\omega \)}
+
+\begin{defi}[Sorts and Higher-Order Terms]
+We define the set of sorts by induction:
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item $\iota$ is a sort.\\
+\item $o$ is a sort.\\
+\item If $\sigma$ and $\tau$ are sorts, then $\sigma \to \tau$ is a sort.
+\end{itemize}
+We have an infinite set $\mathcal{V}$. For each sort $\sigma$, the variables of sort $\sigma$ are elements of $\mathcal{V} \times \set{\sigma}$. We write $a^\sigma$ for $(a, \sigma)$ when there could be confusion about the sort of the variable.
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item If $a^\tau$ is a variable of sort $\tau$, then $a^\tau$ is a term of sort $\tau$.\\
+\item If $f$ is a term of sort $\tau$, and $a^\sigma$ is a variable of sort $\sigma$, then $\lambda a^\sigma. f$ is a term of sort $\sigma \to \tau$.\\
+\item If $f$ is a term of sort $\sigma \to \tau$, and $g$ is a term of sort $\sigma$, then $(f)g$ is a term of sort $\tau$.\\
+\item $0$ is a term of sort $\iota$.\\
+\item $s$ is a term of sort $\iota \to \iota$.\\
+\item For any sort $\tau$, $\rec_\tau$ is a term of sort $\tau \to ( \iota \to \tau \to \tau) \to \iota \to \tau$.
+\end{itemize}
+These terms are called "higher-order terms". We consider higher-order terms modulo $\alpha$-equivalence and use the usual conventions to define the notions of free, bound variables, and substitution.
+\end{defi}
+
+
+\begin{defi}[Formulas of $\PA_\omega$]
+We will define rules to form terms of sort $o$. Terms of sort $o$ are also higher-order terms, but we will prefer to call them formulas.
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item If $t$ and $u$ are two higher-order terms of sort $\tau$, then $t \neq u$ is of sort $o$.\\
+\item If $A$ and $B$ are formulas, then $A \implies B$ is of sort $o$.\\
+\item If $A$ is of sort $o$ and $a^\tau$ is a variable of sort $\tau$, then $\forall a^\tau. A$ is of sort $o$.
+\end{itemize}
+\end{defi}
+
+\begin{defi}[$\beta, \eta$-reduction on higher-order terms]
+We define the binary relation $\longrightarrow$ on higher-order terms as the smallest transitive and reflexive relation containing $\beta, \eta$-reduction and the following (left-to-right oriented) relations:
+$$ \rec_\tau f g 0 \longrightarrow f$$
+$$\rec_\tau f g (sn) \longrightarrow g n (\rec_\tau f g n)$$
+For each sort $\tau$. We denote by $\sim$ the smallest equivalence relation containing $\longrightarrow$.
+\end{defi}
+
+\begin{prop}[Subject reduction]
+If $f$ is a term of sort $\tau$ and $f \longrightarrow g$, then $g$ is a term of sort $\tau$. 
+\end{prop}
+
+\begin{proof}
+This result is proved by induction on the different reduction rules. 
+\end{proof}
+
+\begin{prop}[Church-Rosser property]
+Let $f, f'$, and $f''$ be higher-order terms such that $f \longrightarrow f'$ and $f \longrightarrow f''$. Then, there exists a higher-order term $g$ such that $f' \longrightarrow g$ and $f'' \longrightarrow g$.
+\end{prop}
+
+\begin{proof}
+The proof is similar to that of Church-Rosser in the pure $\lambda$-calculus.
+\end{proof}
+
+\begin{prop}[Strong normalization of higher-order terms]
+For any higher-order term $f$, there exists a normal form term $f'$ such that, regardless of the choice of reduction rules application, $f$ reduces to $f'$.
+\end{prop}
+
+\begin{proof}
+This result is proved by induction on the height of types.
+\end{proof}
+
+We have defined higher-order terms and formulas of $\PA_\omega$; we now need to define the logic of this system.
+
+\begin{defi}[Typing of Proof Terms in $\PA_\omega$]
+We define proof terms as follows:
+$$
+\begin{prooftree}[center=false]
+\infer0[(1)]{\Gamma, x : A \vdash x : A}
+\end{prooftree}
+\qquad
+\begin{prooftree}[center=false]
+\hypo{\Gamma, x : A \vdash t : B}
+\infer1[(2)]{\Gamma \vdash \lambda x.t : A \implies B}
+\end{prooftree}
+\qquad
+\begin{prooftree}[center=false]
+\hypo{\Gamma \vdash t : A \implies B \quad \Gamma \vdash u : A}
+\infer1[(3)]{\Gamma \vdash (t)u : B}
+\end{prooftree}
+$$
+$$
+\begin{prooftree}[center=false]
+\hypo{\Gamma \vdash t : A \quad {\footnotesize a^\tau \text{ not free in } \Gamma}}
+\infer1[(4)]{\Gamma \vdash t : \forall a^\tau. A}
+\end{prooftree}
+\qquad
+\begin{prooftree}[center=false]
+\hypo{\Gamma \vdash t : \forall a^\tau. A}
+\infer1[(5)]{\Gamma \vdash t :A[a^\tau := f] \quad {\footnotesize f \text{ of sort } \tau}}
+\end{prooftree}
+$$
+$$
+\begin{prooftree}[center=false]
+\hypo{\Gamma[a^\tau := f, b^\tau := g] \vdash t : f \neq g}
+\infer1[(6)]{\Gamma[a^\tau := g, b^\tau := f] \vdash t : f \neq g}
+\end{prooftree}
+\qquad
+\begin{prooftree}[center=false]
+\hypo{\Gamma \vdash t : f \neq f}
+\infer1[(7)]{\Gamma \vdash t : A}
+\end{prooftree}
+\qquad
+\begin{prooftree}[center=false]
+\infer0[(8)]{\Gamma \vdash \cc : ((A \implies B) \implies A) \implies A}
+\end{prooftree}
+$$
+\end{defi}
+
+The term $\cc$ expresses the fact that we are in classical logic. For any formula $A$, we can derive a typing term $\neg \neg A \implies A$ using $\cc$.
+
+\begin{defi}[Usual Logical Connectives]
+\begin{align*}
+\setlength\itemsep{ -1 em}
+\bot \ :=& \ 0 \neq 0 \\
+\neg A \ :=& \ A \implies \bot \\
+A \land B \ :=& \ \forall a^o.((A \implies B \implies a) \implies a)\\
+A \lor B \ :=& \ \forall a^o.((A \implies a) \implies (B \implies a) \implies a)\\
+A \iff B \ :=& \ (A \implies B) \land (B \implies A)\\
+\exists a^\tau. A \ :=& \ \forall b^o.(\forall a^\tau. (A \implies b) \implies b)\\
+f = g \ :=& \ \neg f \neq g
+\end{align*}
+where $a^o$ is a fresh variable.
+\end{defi}
+
+We might think that $\PA_\omega$ is similar to Peano's arithmetic; however, most of the axioms of $\PA$ are not present. Indeed, even if we are tempted to consider $0$ and $s$ as the zero and successor function of $\PA$, this is not the case. $\PA_\omega$ is a much more general theory than $\PA$, as we will see in \ref{non rec}.
+
+\begin{prop}[Admissible Rules]
+The following rules are admissible:\\
+(weakening):
+$$ 
+\begin{prooftree}[center=false]
+\hypo{\Gamma \vdash t : A \quad \Gamma \subseteq \Gamma'}
+\infer[double]1{\Gamma' \vdash t : A}
+\end{prooftree}
+$$
+(substitution for higher-order terms):
+$$
+\begin{prooftree}[center=false]
+\hypo{\Gamma \vdash t : A \quad {\footnotesize f \text{ of sort } \tau}}
+\infer[double]1{\Gamma[a^\tau := f] \vdash t : A[a^\tau := f]}
+\end{prooftree}
+$$
+($\sim$-substitutability):
+$$
+\begin{prooftree}[center=false]
+\hypo{\Gamma \vdash t : A \quad f \sim g}
+\infer[double]1{\Gamma[f := g] \vdash t : A[f := g]}
+\end{prooftree}
+$$
+($=$-substitutability)
+$$
+\begin{prooftree}[center=false]
+\hypo{\Gamma \vdash t : A[a := f]}
+\infer[double]1{\Gamma, y : f = g \vdash \cc(\lambda x. y(xt)) : A[a := g]}
+\end{prooftree}
+$$
+\end{prop}
+
+\begin{proof} 
+We assume the first three results. Let's prove the $=$-substitutability rule. Let $\Gamma'$ be the context $\Gamma, y : f = g, x : A[a := g] \implies f \neq g$:
+$$
+\begin{prooftree}[center=false]
+\hypo{\Gamma \vdash t : A[a := f]}
+\infer[double]1{\Gamma' \vdash t : A[a := f]}
+\infer0{\Gamma' \vdash x : A[a := f] \implies f \neq g}
+\infer2{\Gamma' \vdash xt : f \neq g}
+\infer1{\Gamma'[a := g] \vdash xt : f \neq g}
+\infer0{\Gamma'[a := g] \vdash y : f = g}
+\infer2{\Gamma'[a := g] \vdash y(xt) : 0 \neq 0}
+\infer1{\Gamma'[a := g] \vdash y(xt) : A[a := g]}
+\infer1{\Gamma, y : f = g \vdash \lambda x. y(xt) : (A[a := g] \implies f \neq g) \implies A[a := g]}
+\hypo{}
+\ellipsis{}{}
+\infer2{\Gamma, y : f = g \vdash \cc(\lambda x. y(xt)) : A[a := g]}
+\end{prooftree}
+$$
+\end{proof}
+
+An immediate consequence of $=$-substitutability is that for any term $F$ of sort $\sigma \to \tau$, there exists a proof term $t$ such that $\vdash t : \forall a^\sigma. \forall b^\sigma. \ a = b \implies Fa = Fb$ is derivable.
+
+\begin{prop}
+$\PA_\omega$ proves that $=$ is an equivalence relation.
+\end{prop}
+
+\begin{proof}
+Let's prove reflexivity. Let $a$ be a higher-order variable of sort $\tau$:
+$$
+\begin{prooftree}[center=false]
+\infer0{ x : a \neq a \vdash x : a \neq a}
+\infer1{x : a \neq a \vdash x : \bot}
+\infer1{\vdash \lambda x. x : a = a}
+\infer1{\vdash \lambda x. x : \forall a^\tau. a = a}
+\end{prooftree}
+$$
+Let's prove symmetry. Let $a, b,$ and $c$ be three higher-order variables of sort $\tau$:
+$$
+\begin{prooftree}[center=false]
+\hypo{}
+\ellipsis{}{}
+\infer1{\vdash \lambda x.x : c = a[c := a]}
+\infer[double]1{y : a = b \vdash t : c = a[c := b]}
+\infer1{\vdash \lambda y. t : a = b \implies b = a}
+\ellipsis{}{}
+\infer1{\vdash \lambda y. t : \forall a^\tau. \forall b^\tau. a = b \implies b = a}
+\end{prooftree}
+$$
+Let's prove transitivity. Let $a, b, c,$ and $d$ be four higher-order variables of sort $\tau$:
+$$
+\begin{prooftree}[center=false]
+\infer0{x : a = b \vdash x : a = d[d := b]}
+\infer[double]1{x : a = b, y : b = c \vdash t : a = d[d := c]}
+\ellipsis{}{}
+\infer1{\vdash \lambda x. \lambda y. t : \forall a^\tau. \forall b^\tau. \forall c^\tau. a = b \implies b = c \implies a = c}
+\end{prooftree}
+$$
+\end{proof}
+
+\begin{prop}
+For all formulas $A$ and $B$, there exists a proof term $t$ such that the sequent $\vdash t : A = B \implies (A \iff B)$ is derivable.
+\end{prop}
+
+\begin{proof}
+$$
+\begin{prooftree}[center=false]
+\hypo{}
+\ellipsis{}{ \vdash t : A \iff A }
+\infer[double]1{y : A = B \vdash \cc(\lambda x. y(xt)) : A \iff B}
+\infer1{\vdash \lambda y. \cc(\lambda x. y(xt)) : A = B \implies (A \iff B)}
+\end{prooftree}
+$$
+\end{proof}
+
+These propositions help to convince ourselves that equality in $\PA_\omega$ has the properties we expect from equality. It is important to keep in mind that this is in no way extensional equality. Suppose $f$ and $g$ are two terms of sorts $\tau \to \sigma$ such that $\forall a^\tau. (fa) = (ga)$; then, in general, we cannot conclude that $f = g$.
+
+\clearpage
+\subsection{Realizability model of \( \PA_\omega \)}
+
+There are various different notions of models in logic. In general, it involves associating values to the terms of a theory in a fixed domain, akin to models in first-order logic. When referring to a model of $\PA_\omega$ here, it involves associating each sort with a set and each higher-order term with an element from the set associated with its sort. One way to do this is to associate the set $\N$ with the sort $\iota$, the set $\{0,1\}$ with the sort $o$, and use exponentiation for sorts of the form $\tau \to \sigma$. In this case, formulas take their values in $\{0,1\}$, and one could easily define a truth notion in the model (similar to models in first-order theories) and use it to study $\PA_\omega$. We will do something analogous by associating the set $\N$ with the sort $\iota$ and the set $\P(\Pi)$ (the power set of the set of stacks corresponding to the falsity values of formulas) with the sort $o$. We will do this in a way that guarantees adequacy, allowing us to start studying $\PA_\omega$ using classical realizability.
+
+\begin{defi}[Terms, Stack, and Krivine Machine for $\PA_\omega$]
+We define (as in \ref{termes et piles}) the sets of terms $\Lambda$ and stacks $\Pi$ with $\Pi_0 := \set{\epsilon_n}_{n \in \N}$ and $\mathcal{I} := \set{\cc, \mathbf{quote}}$. Since $\Lambda$ is countable, we fix a bijective function $\xi_{\square} : \N \to \Lambda_c$.\\
+Let $\succ$ be the minimal Krivine machine on $\Lambda \star \Pi$ on the execution rules \textit{(Push)}, \textit{(Grab)}, \textit{(Save)}, \textit{(Restore)}, and the rule:
+$$\text{(Evaluation)} \quad \mathbf{quote} \star \xi_n \cdot t \cdot \pi \succ t \star \Kri{n} \cdot \pi$$
+\end{defi}
+
+\begin{defi}[Realizability Model for $\PA_\omega$]
+We define the interpretation function for sorts $\itp{\square}_s$: 
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item $\itp{\iota}_s := \N$.\\
+\item $\itp{o}_s := \P(\Pi)$.\\
+\item If $\tau$ and $\sigma$ are sorts, $\itp{\tau \to \sigma}_s := \itp{\sigma}_s^{\itp{\tau}_s}$.
+\end{itemize}
+An environment $\rho$ is a function that takes variables equipped with a sort as arguments, such that for every sort $\tau$, $\rho(a^\tau) \in \itp{\tau}_s$. Given an environment $\rho$, a variable $a^\tau$, and an element $u$ from $\itp{\tau}_s$, we denote $\rho[a^\tau := u] := 
+\left\{\begin{array}{cccc}
+y^\sigma& \mapsto& \rho(y^\sigma) &\text{ if } y^\sigma \neq a^\tau\\
+y^\sigma& \mapsto& u                      &\text{ if } y^\sigma = a^\tau
+\end{array}\right. $\\
+Given a pole $\pole$ and an environment $\rho$, we define the interpretation function for terms $\itp{\square}_\rho$ as follows:
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item For a variable $a^\tau$, $\itp{a^\tau}_\rho := \rho(a^\tau)$.\\
+\item For a higher-order term $f$ of sort $\sigma$, $\fundefdef{\itp{\lambda a^\tau. f}_\rho}{\itp{\tau}_s& \to& \itp{\sigma}_s}{u& \mapsto& \itp{f}_{\rho[a^\tau := u]} }$.\\
+\item For terms $f$ of sort $\tau \to \sigma$ and $g$ of sort $\tau$, $\itp{(f)g}_\rho := \itp{f}_\rho(\itp{g}_\rho)$.\\
+\item $\itp{0}_\rho := 0_\N$.\\
+\item $\itp{s}_\rho := s_\N$.\\
+\item For any sort $\tau$, $\itp{\rec_\tau}_\rho := \rec_{\itp{\tau}_s}$, where $\rec_{\itp{\tau}_s}$ is the recursion operator on $\itp{\tau}_s$.\\
+\item For $\forall a^\tau. A$, $\itp{\forall a^\tau. A}_\rho := \bigcup_{u \in \itp{\tau}_s} \itp{A}_{\rho[a^\tau := u]}$.\\
+\item For $A \implies B$ a formula, $\itp{A \to B}_\rho := \itp{A}_\rho^\pole \cdot \itp{B}_\rho$.\\
+\item For $f$ and $g$ terms of sort $\tau$, $\itp{f \neq g}_\rho := 
+\left\{ \begin{array}{c}
+\Pi \text{ if } \itp{f}_\rho = \itp{g}_\rho \\
+\varnothing \text{ if } \itp{f}_\rho \neq \itp{g}_\rho
+\end{array}\right.$.
+\end{itemize}
+Note that the interpretations of terms indeed belong to the interpretations of sorts. We allow ourselves to confuse the interpretation function of terms and sorts and not mention the environment or the pole when there is no ambiguity. In the case of formulas, we write $\abss{A}$ for $\itp{A}$ and $\abs{A}$ for $\itp{A}^\pole$: these are the truth and falsity values of formulas.
+\end{defi}
+
+\begin{prop}[Stability under $\sim$]
+\label{sim stab}
+Let $f$ and $g$ be two higher-order terms such that $f \sim g$. Then, for any environment $\rho$, $\itp{f}_\rho = \itp{g}_\rho$.
+\end{prop}
+
+\begin{proof}
+The proof is done by induction on the reduction rules.
+\end{proof}
+
+\begin{prop}
+For any pole and any formula $A$, there exists a $\lambda_c$-term $t$ such that $t \Vdash A$.
+\end{prop}
+
+\begin{proof}
+Let $\pole$ be a pole and $A$ a formula. If $\pole = \varnothing$, then $\abs{A} = \Lambda_c$. Suppose $\pole \neq \varnothing$, let $u \star \pi \in \pole$. We will show $\k_\pi u \Vdash A$:\\
+$\k_\pi u \Vdash A \iff \forall \pi' \in \abss{A}, \  \k_\pi u \star \pi' \in \pole$. However, for any stack $\pi'$, $\k_\pi u \star \pi' \succ u \star \pi \in \pole$. Thus, by saturation, $\k_\pi u \star \pi' \in \pole$.
+\end{proof}
+
+This result makes us realize that the continuation constants pose problems. Indeed, for any pole, $\bot$ is realized. This leads us to the following definition:
+
+\begin{defi}[Quasi-Proof]
+A quasi-proof is a $\lambda_c$-term that does not contain continuation constants (i.e., subterms of the form $\k_\pi$). We denote $\QP$ as the set of quasi-proofs.
+\end{defi}
+
+\begin{defi}[Theory of a Pole]
+Let $\pole$ be a pole; we define:
+$$ \Th(\pole) := \set{ A \text{ closed formula } \mid \exists t \in \QP, \ t \Vdash_\pole A }$$
+We say that a pole $\pole$ is coherent if $\bot \not \in \Th(\pole)$.
+\end{defi}
+
+\begin{rmqs}\label{R1} 
+A pole $\pole$ is coherent if and only if for every quasi-proof $t$, there exists a stack $\pi$ such that $t \star \pi \not \in \pole$.\\
+Let $\pole$ be a pole, and $f$ and $g$ be two higher-order terms of the same sort.
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item If $\itp{f} = \itp{g}$
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item $\abs{f \neq g} := \set{ t \in \Lambda_c \mid \forall \pi \in \Pi, t \star \pi \in \pole}$.\\
+\item \begin{align*}
+\abs{f = g} &:= \set{ t \in \Lambda_c \mid \forall \pi \in \abss{f = g}, t \star \pi \in \pole}\\
+&= \set{ t \in \Lambda_c \mid \forall u \in \abs{f \neq g}, \forall \pi \in \abss{0 \neq 0}, t \star u \cdot \pi \in \pole}\\
+&= \set{ t \in \Lambda_c \mid \forall u \in \abs{f \neq g}, \forall \pi \in \Pi, t \star u \cdot \pi \in \pole}
+\end{align*}
+Since $\abss{f \neq g} = \Pi$, we have $\lambda x.x \Vdash \abs{f = g}$, so $f = g \in \Th(\pole)$. Note that $\abss{f = g} \neq \Pi$ because, for example, $\epsilon_i \not \in \abss{f = g}$.
+\end{itemize}
+\item If $\itp{f} \neq \itp{g}$
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item $\abs{f \neq g} = \set{ t \in \Lambda_c \mid \forall \pi \in \varnothing, t \star \pi \in \pole}$, so every $\Lambda_c$ term realizes $f \neq g$, and thus $f \neq g \in \Th(\pole)$.\\
+\item \begin{align*}
+\abs{f = g} &:= \set{ t \in \Lambda_c \mid \forall u \in \abs{f \neq g}, \forall \pi \in \Pi, t \star u \cdot \pi \in \pole}\\
+& =  \set{ t \in \Lambda_c \mid \forall u \in \Lambda_c, \forall \pi \in \Pi, t \star u \cdot \pi \in \pole}
+\end{align*}
+Assume $\pole$ is coherent. Let $t \in \QP$ such that $t \in \abs{f = g}$, and $u \in \QP$. Since $(t)u$ is in $\QP$, and as the pole is coherent, there exists a stack $\pi_0$ such that $(t)u \star \pi_0 \not \in \pole$. However, as $t \in \abs{f = g}$, we have $t \star u \cdot \pi_0 \in \pole$ (by the \textit{(Push)} rule and saturation). This leads to a contradiction, so $f = g \not \in \Th(\pole)$, and moreover, $\abss{f = g} = \Lambda_c \cdot \Pi \neq \Pi$.
+\end{itemize}
+\end{itemize}
+\end{rmqs}
+
+\begin{theo}[Adequacy]
+\label{ade}
+For any pole, we have the following property:\\
+For all formulas $A, A_1, \dots, A_n$, if $x_1 : A_1, \dots, x_n : A_n \vdash t : A$ is derivable, then for any environment $\rho$ such that $u_1 \Vdash_\rho A_1,  \dots, u_n \Vdash_\rho A_n$, we have $t[ \bar{x} := \bar{u}] \Vdash_\rho A$.
+\end{theo}
+
+\begin{proof}
+We fix $\pole$ as a pole. By induction on the structure of the proof terms:
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item[(1)] Let $\rho$ be an environment. If $u \Vdash_\rho A$, then $u = x[x := u] \Vdash_\rho A$.\\
+
+\item[(2)] Let $\rho$ be an environment. Let $x_1 : A_1, \dots, x_n : A_n \vdash t : A \implies B$ and $x_1 : A_1, \dots, x_n \vdash u : A$ derivable. Suppose $v_i \Vdash_\rho A_i$. We have, by the induction hypothesis, $t[ \bar{x} := \bar{v}] \Vdash_\rho A \implies B$ and $u[\bar{x} := \bar{v}] \Vdash_\rho A$. We want to show that $(tu)[\bar{x} := \bar{v}] \Vdash_\rho B$. Unfolding the definition, we get:
+$$\forall u' \in \abs{A}_\rho, \forall \pi \in \abss{B}_\rho, \ t[\bar{x} := \bar{v}] \star u' \cdot \pi \in \pole$$
+So, in particular:
+$$ \forall \pi \in \abss{B}_\rho, \ t[\bar{x} := \bar{v}] \star u[\bar{x} := \bar{v}] \cdot \pi \in \pole$$
+Using the \textit{(Push)} rule, we notice that:
+$$\forall \pi \in \abss{B}_\rho, \ (t[\bar{x} := \bar{v}])u[\bar{x} := \bar{v}] \star \pi \succ t[\bar{x} := \bar{v}] \star u[\bar{x} := \bar{v}] \cdot \pi$$
+Saturation and substitution properties give:
+$$\forall \pi \in \abss{B}_\rho, \ (tu)[\bar{x} := \bar{v}] \star \pi \in \pole$$
+Thus, we indeed have $(tu)[\bar{x} := \bar{v}] \Vdash_\rho B$.\\
+
+\item[(3)] Let $\rho$ be an environment. Let $x_1 : A_1, \dots, x_n, y : A \vdash t : B$ be derivable. Let $u_i \Vdash_\rho A_i$, $t' \Vdash_\rho A$, and $\pi \in \abss{B}_\rho$. We want to show that $(\lambda y.t)[\bar{x} := \bar{u}] \star t' \cdot \pi \in \pole$ (hence, $(\lambda y.t)[\bar{x} := \bar{u}] \Vdash_\rho A \implies B$).\\
+The \textit{(Grab)} rule gives us:
+$$(\lambda y.t)[\bar{x} := \bar{u}] \star t' \cdot \pi \succ  t[\bar{x} := \bar{u}][y := t'] \star \pi $$
+We have $t' \Vdash_\rho A$, and by the induction hypothesis, we have:
+$$t[\bar{x} := \bar{u}][y := t'] = t[\bar{x} := \bar{u}, y := t'] \Vdash_\rho B$$
+So,
+$$(\lambda y.t)[\bar{x} := \bar{u}] \star t' \cdot \pi \succ  t[\bar{x} := \bar{u}, y := t'] \star \pi \in \pole$$
+Thus, $(\lambda y.t)[\bar{x} := \bar{u}] \Vdash_\rho A \implies B$.\\
+
+\item[(4)] Let $\rho$ be an environment. Let $x_1 : A_1, \dots, x_n \vdash t : A$ be derivable. Let $a^\tau$ be a variable of sort $\tau$ not free in $\bar{A}$. Let $u_i \Vdash_\rho A_i$. We want to show $c \Vdash_\rho \forall a^\tau. A$.\\
+We can easily show that:
+$$t[\bar{x} := \bar{u}] \Vdash_\rho \forall a^\tau. A \ \iff \ \forall j \in \itp{\tau}, \ t[\bar{x} := \bar{u}] \Vdash_{\rho[a^\tau := j]} A$$
+Let $j \in \itp{\tau}$ be fixed. Since $a^\tau$ is not free in $\bar{A}$, we have $u_i \Vdash_{\rho[a^\tau := j]} A_i$. By the induction hypothesis, we then have $t[\bar{x} := \bar{u}] \Vdash_{\rho[a^\tau := j]} A$.\\
+
+\item[(5)] Let $\rho$ be an environment. Let $x_1 : A_1, \dots, x_n \vdash t : \forall a^\tau.A$ be derivable. By the induction hypothesis, we have $t[\bar{x} := \bar{u}] \Vdash_\rho \forall a^\tau.A$. Let $f$ be a higher-order term of sort $\tau$. Let $\rho'$ be the environment such that for any variable $b^\sigma \neq a^\tau$, $\rho'(b^\sigma) = \rho(b^\sigma)$, and $\rho'(a^\tau) = \itp{f}_\rho$. We then have $t[\bar{x} := \bar{u}] \Vdash_{\rho'} A$, and consequently, $t[\bar{x} := \bar{u}] \Vdash A[a^\tau := f]$.\\
+
+\item[(6)] Let $\rho$ be an environment. Let $f$ and $g$ be higher-order terms of sort $\tau$. Let $x_1 : A_1, \dots, x_n \vdash t : f \neq g$ be derivable, and $u_i \Vdash_\rho A_i[a^\tau := g, b^\tau := f]$. If $\itp{f}_\rho = \itp{g}_\rho$, then $u_i \Vdash_\rho A_i[a^\tau := f, b^\tau := g]$, and we conclude using the induction hypothesis. If $\itp{f}_\rho \neq \itp{g}_\rho$, then $\abs{f \neq g}_\rho = \Lambda_c$, so $t[\bar{x} := \bar{u}] \Vdash_\rho f \neq g$.\\
+
+\item[(7)] Let $\rho$ be an environment. Let $f$ be a higher-order term. Let $x_1 : A_1, \dots, x_n \vdash t : f \neq f$ be derivable, and $u_i \Vdash_\rho A_i$. We have $\abss{f \neq f}_\rho = \Pi$, so by the induction hypothesis, for all $\pi \in \Pi$, we have $t[\bar{x} := \bar{u}] \star \pi \in \pole$. Let $A$ be any formula; in particular, we have $t[\bar{x} := \bar{u}] \star \pi \in \pole$ for all $\pi \in \abss{A}_\rho$, and thus, $t[\bar{x} := \bar{u}] \Vdash_\rho A$.\\
+
+\item[(8)] Let $\rho$ be an environment. For any formulas $A$ and $B$, $\vdash \cc : ((A \implies B) \implies A) \implies A$ is derivable. Let's show $\cc \Vdash_\rho ((A \implies B) \implies A) \implies A$.
+\begin{align*}
+\cc \Vdash_\rho ((A \implies B) \implies A) \implies A \ \iff& \ \forall \pi \in \abss{((A \implies B) \implies A) \implies A}_\rho, \ \cc \star \pi \in \pole\\
+\iff& \ \forall t \in \abs{((A \implies B) \implies A)}_\rho, \forall \pi \in \abss{A}_\rho, \ \cc \star t \cdot \pi \in \pole
+\end{align*}
+Let $t \in \abs{((A \implies B) \implies A)}_\rho$ and $\pi \in \abss{A}_\rho$. We have $ \cc \star t \cdot \pi \succ (t)\k_\pi \star \pi \succ t \star \k_\pi \cdot \pi$. Since $t \in \abs{((A \implies B) \implies A)}_\rho$, showing $\cc \Vdash_\rho ((A \implies B) \implies A) \implies A$ is equivalent to showing $\k_\pi \cdot \pi \in \abss{((A \implies B) \implies A)}_\rho$. We know that $\k_\pi \cdot \pi \in \abss{((A \implies B) \implies A)}_\rho$ if and only if $\k_\pi \in \abs{A \implies B}_\rho$ and $\pi \in \abss{A}_\rho$. We already have $\pi \in \abss{A}_\rho$, let's show $\k_\pi \in \abs{A \implies B}_\rho$. Let $t' \in \abs{A}_\rho$ and $\pi' \in \abss{B}_\rho$. We have $\k_\pi \star t' \cdot \pi' \succ t' \star \pi \in \pole$, concluding the proof.
+\end{itemize}
+\end{proof}
+
+\begin{lem}[Deductive Closure]
+\label{cloture}
+For any pole $\pole$, $\Th(\pole)$ is closed under deduction in $\PA_\omega$.
+\end{lem}
+
+\begin{proof}
+To prove this result, it suffices to revisit the adequacy theorem by adding the condition that $\lambda_c$-terms must be quasi-proofs.
+\end{proof}
+
+To show that $\DC$ is the theory of every pole, we will need results on the arithmetic of $\PA_\omega$.
+
+\clearpage
+\subsection{Arithmétic of \( \PA_\omega \)}
+\label{arithmetique de PA}
+
+\paragraph{Notations:} Let $t$ and $u$ two terms and $n \in \N$ we define by induction the following notation $(t)^n u$:
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item $(t)^0 u := u$.\\
+\item $(t)^{n +1} u := (t)(t)^nu$.
+\end{itemize}
+Let $n \in \N$, we define $\bar{n} := s^{n}0$.\\
+Let $n \in \N \setminus \set{0}$ and $\tau$ a sort, we define by induction the notation $\tau^n$ :
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item $\tau^1 := \tau$.\\
+\item $\tau^{n +1} := \tau \to \tau^n$.
+\end{itemize}
+
+\begin{defi}[Representable Functions]
+Let $r \in \N \setminus \set{0}$, a function $f_\N: \N^r \to \N$ is representable in $\PA_\omega$ if there exists a higher-order term $f$ of type $\iota^{r+1}$ such that for all $n_1, \dots, n_r \in \N$,
+$$\bar{f_\N(n_1, \dots, n_r)} = f \bar{n_1} \dots \bar{n_r}$$
+is true in $\PA_\omega$.
+\end{defi}
+
+\begin{rmq}
+In the following, all functions from $\N^r \to \N$ will be denoted with $\N$ as a subscript, and their representation in $\PA_\omega$ will be noted without $\N$ as a subscript. If $f$ is a higher-order term of type $\iota^{r+1}$, we will write $f(a_1, \dots, a_r)$ for $f a_1 \dots a_r$.
+\end{rmq}
+
+\begin{lem}
+\label{egal itp rep}
+Let $r \in \N \setminus \set{0}$, $f_\N : \N^r \to \N$ be a representable function in $\PA_\omega$. Then, for any pole and any environment $\rho$, $\itp{f}_\rho = f_\N$.
+\end{lem}
+
+\begin{proof}
+Let $\pole$ be a pole and $\rho$ an environment. For simplicity, we assume $r = 1$. $f$ is of the form $\lambda a^\iota. f'$. For any $n \in \N$, we have $\itp{f}_\rho(n) = \itp{f'}_{\rho[a := n]} = \itp{f'[a := \bar{n}]}_\rho$. Now, $f'[a := \bar{n}] \sim f(\bar{n})$, so by \ref{sim stab}, $\itp{f}_\rho(n) = \itp{f(\bar{n})}_\rho$. $\PA_\omega$ proves $f(\bar{n}) = \bar{f_\N(n)}$, so by the closure property (\ref{cloture}), there exists a quasi-proof $t$ such that $t \Vdash f(\bar{n}) = \bar{f_\N(n)}$. According to remark \ref{R1}, we have $\itp{f}_\rho(n) = \itp{f(\bar{n})}_\rho = \itp{\bar{f_\N(n)}}_\rho = f_\N(n)$.
+\end{proof}
+
+
+\paragraph{Notation:} We write $t \Vvdash A$ if, for every pole $\pole$, $t \Vdash_\pole A$.
+
+\begin{theo}
+\label{T1}
+Let $g_\N, g'_\N, f_\N$, and $f'_\N$ be functions from $\N^n \to \N$ representable in $\PA_\omega$. If the formula
+$$\forall a_1, \dots, a_n \in \N, \ f_\N(a_1, \dots a_n) = f'_\N (a_1, \dots a_n)$$
+is true, then
+$$\lambda x.x \Vvdash \forall a_1^\iota, \dots, a_n^\iota, \ f(a_1, \dots a_n) = f'(a_1, \dots a_n)$$
+Similarly, for the formulas:
+$$\forall a_1, \dots, a_n \in \N, \ f_\N(a_1, \dots a_n) \neq f'_\N (a_1, \dots a_n)$$
+and
+$$\forall a_1, \dots, a_n \in \N, \ g_\N (a_1, \dots a_n) \neq g'_\N (a_1, \dots a_n) \implies f_\N(a_1, \dots a_n) \neq f'_\N (a_1, \dots a_n)$$
+\end{theo}
+
+\begin{proof}
+Let $\pole$ be a fixed pole. Suppose $\forall a_1, \dots, a_n \in \N, \ f_\N(a_1, \dots a_n) = f'_\N (a_1, \dots a_n)$. Then, for any environment $\rho$, we have
+$$f_\N(\rho(a_1), \dots \rho(a_n)) = f'_\N (\rho(a_1), \dots \rho(a_n))$$
+By lemma \ref{egal itp rep}, we have:
+$$ \itp{f}_\rho (\rho(a_1), \dots \rho(a_n)) = \itp{f'}_\rho (\rho(a_1), \dots \rho(a_n))$$
+So,
+$$ \itp{f(\rho(a_1), \dots \rho(a_n))}_\rho = \itp{f'(\rho(a_1), \dots \rho(a_n))}_\rho$$
+By remark \ref{R1}, we then have $\lambda x.x \Vdash_\rho f(a_1, \dots a_n) = f'(a_1, \dots a_n)$, and hence,
+$$\lambda x.x \Vvdash \forall a_1^\iota. \dots, a_n^\iota. \ f(a_1, \dots a_n) = f'(a_1, \dots a_n)$$
+Now, suppose $\forall a_1, \dots, a_n \in \N, \ f_\N(a_1, \dots a_n) \neq f'_\N (a_1, \dots a_n)$. Then, for any environment $\rho$, we have
+$$f_\N(\rho(a_1), \dots \rho(a_n)) \neq f'_\N (\rho(a_1), \dots \rho(a_n))$$
+By lemma \ref{egal itp rep}, we have:
+$$ \itp{f}_\rho (\rho(a_1), \dots \rho(a_n)) \neq \itp{f'}_\rho (\rho(a_1), \dots \rho(a_n))$$
+So,
+$$ \itp{f(\rho(a_1), \dots \rho(a_n))}_\rho \neq \itp{f'(\rho(a_1), \dots \rho(a_n))}_\rho$$
+By remark \ref{R1}, we then have that any $\lambda_c$-term satisfies the formula. In particular, $\lambda x.x \Vdash_\rho f(a_1, \dots a_n) \neq f'(a_1, \dots a_n)$, and hence,
+$$\lambda x.x \Vvdash \forall a_1^\iota. \dots. a_n^\iota. \ f(a_1, \dots a_n) \neq f'(a_1, \dots a_n)$$
+Finally, suppose $\forall a_1. \dots. a_n \in \N, \ g_\N (a_1, \dots a_n) \neq g'_\N (a_1, \dots a_n) \implies f_\N(a_1, \dots a_n) \neq f'_\N (a_1, \dots a_n)$. Let $\rho$ be an environment. If
+$$\itp{g(a_1, \dots a_n)}_\rho = \itp{g'(a_1, \dots a_n)}_\rho$$
+Then $\itp{g(a_1, \dots a_n) \neq g'(a_1, \dots a_n)}_\rho = \Pi$, so $\lambda x.x \Vdash_\rho g(a_1, \dots a_n) = g'(a_1, \dots a_n)$. If
+$$\itp{g(a_1, \dots a_n)}_\rho \neq \itp{g'(a_1, \dots a_n)}_\rho$$
+Then
+$$\itp{g}_\rho (\rho(a_1), \dots \rho(a_n)) \neq \itp{g'}_\rho (\rho(a_1), \dots \rho(a_n))$$ 
+By lemma \ref{egal itp rep},
+$$g_\N (\rho(a_1), \dots \rho(a_n)) \neq g'_\N (\rho(a_1), \dots \rho(a_n))$$
+So, by the assumption,
+$$f_\N (\rho(a_1), \dots \rho(a_n)) \neq f'_\N (\rho(a_1), \dots \rho(a_n))$$
+By lemma \ref{egal itp rep},
+$$\itp{f(a_1, \dots a_n)}_\rho \neq \itp{f'(a_1, \dots a_n)}_\rho$$
+Thus, $\abss{f(a_1, \dots a_n) \neq f'(a_1, \dots a_n)} = \varnothing$, so any $\lambda_c$-term satisfies the formula. In particular,
+$$\lambda x.x \Vdash_\rho g(a_1, \dots a_n) \neq g'(a_1, \dots a_n) \implies  f(a_1, \dots a_n) \neq f'(a_1, \dots a_n)$$
+Therefore,
+$$\lambda x.x \Vvdash \forall a_1^\iota. \dots. a_n^\iota. \ g(a_1, \dots a_n) \neq g'(a_1, \dots a_n) \implies  f(a_1, \dots a_n) \neq f'(a_1, \dots a_n)$$
+\end{proof}
+
+\begin{coro}
+\label{C1}
+Let $g_\N, g'_\N, f_\N$, and  $f'_\N$ be functions from $\N^n \to \N$ representable in $\PA_\omega$. If the formula 
+$$\forall a_1, \dots, a_n \in \N, \ g_\N (a_1, \dots a_n) = g'_\N (a_1, \dots a_n) \implies f_\N(a_1, \dots a_n) = f'_\N (a_1, \dots a_n)$$
+is true, then 
+$$\forall a_1^\iota. \dots. a_n^\iota. \ g(a_1, \dots a_n) = g'(a_1, \dots a_n) \implies  f(a_1, \dots a_n) = f'(a_1, \dots a_n)$$ 
+is in the theory of every pole.
+\end{coro}
+
+\begin{proof}
+$$\forall a_1^\iota. \dots. a_n^\iota. \ g(a_1, \dots a_n) = g'(a_1, \dots a_n) \implies  f(a_1, \dots a_n) = f'(a_1, \dots a_n)$$
+is equivalent to the formula 
+$$\forall a_1^\iota. \dots. a_n^\iota. \ f(a_1, \dots a_n) \neq f'(a_1, \dots a_n) \implies  g(a_1, \dots a_n) \neq g'(a_1, \dots a_n)$$
+By theorem \ref{T1} and the closure property (\ref{cloture}), we have the desired result.
+\end{proof}
+
+\begin{prop}
+Totally provable recursive functions in $\PA$ are representable in $\PA_\omega$.
+\end{prop}
+
+\begin{proof}
+The system $T$ can be encoded in $\PA_\omega$, so all functions representable in system $T$ are representable in $\PA_\omega$. According to \cite{MiquelF}, functions representable in system $T$ are exactly the totally provable recursive functions in $\PA$.
+\end{proof}
+
+\paragraph{Notation:} We use the usual symbols for the representations of standard primitive recursive functions (e.g., $+$ for addition, $\times$ for multiplication, \dots).
+
+\begin{coro}[Fragment of Peano's Arithmetic]
+The following formulas are in the theory of every pole:
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item $\forall a^\iota. sa \neq 0$\\
+\item $\forall a^\iota. \forall b^\iota. sa = sb \implies a = b$\\
+\item $\forall a^\iota. a + 0 = a$\\
+\item $\forall a^\iota. \forall b^\iota. a + sb = s(a + b)$\\
+\item $\forall a^\iota. a \times 0 = 0$\\
+\item $\forall a^\iota. \forall b^\iota. a \times sb = (a \times b) + a$
+\end{itemize}
+\end{coro}
+
+\begin{proof}
+Immediately follows from Theorem \ref{T1} and Corollary \ref{C1}.
+\end{proof}
+
+To show that we have Peano's arithmetic, we need to establish that the formula $\forall a^\iota. a = 0 \lor \exists b^\iota. sb = a$ and the induction schema are realized. Unfortunately, this is not the case, but we can work around the problem.
+
+\begin{defi}[Induction Axiom]
+The induction axiom is the formula $\forall a^\iota. \int(a)$ where
+$$\int(a) := \forall P^{\iota \to o}. \ (\forall b^\iota. \ Pb \implies P(sb))\implies P0 \implies Pa$$ 
+\end{defi}
+
+\begin{prop}[Non-realization of the induction axiom]
+\label{non rec}
+There is no $\lambda_c$-term $t$ such that $t \Vvdash \forall a^\iota. \int(a)$.
+\end{prop}
+
+\begin{proof}
+Suppose $t$ is such a $\lambda_c$-term. We have $t \Vvdash \int(0)$ and $t \Vvdash \int(1)$. Let $\delta := \lambda x. xx$, $\alpha_0 := \delta \delta \Kri{0}$, and $\alpha_1 := \delta \delta \Kri{1}$. Let $\pi$ be a fixed stack. \\
+\\
+Define $\pole_0 := \set{ p \in \Lambda \star \Pi \mid p \succ \alpha_0 \star \pi}$, which is a pole. Let $\rho_0$ be an environment such that\\
+$\fundef{\rho_0(P^{\iota \to o})}{0 &\mapsto &\set{\pi}}{i +1 &\mapsto &\varnothing}$ for $i \in \N$. We have $\alpha_0 \Vdash_{\rho_0, \pole_0} P0$ and for all $u \in \Lambda_c$, $u \Vdash_{\rho_0, \pole_0} \forall y^\iota. \ (Py \implies P(sy))$. Since $t \Vvdash \int(0)$, we have $t \star \lambda x. \alpha_1 \cdot \alpha_0 \cdot \pi \in \pole_0$.\\
+\\
+Define $\pole_1 := \set{ p \in \Lambda \star \Pi \mid p \succ \alpha_1 \star \pi}$, which is a pole. Let $\rho_1$ be an environment such that\\
+$\fundef{\rho_1(P^{\iota \to o})}{0 &\mapsto &\varnothing}{i +1 &\mapsto &\set{\pi}}$ for $i \in \N$. We have for all $u \in \Lambda_c$, $u \Vdash_{\rho_1, \pole_1} P0$ and $\lambda x. \alpha_1 \Vdash_{\rho_1, \pole_1} \forall y^\iota. \ (Py \implies P(sy))$. Since $t \Vvdash \int(1)$, we have $t \star \lambda x. \alpha_1 \cdot \alpha_0 \cdot \pi \in \pole_1$.\\
+\\
+So, $t \star \lambda x. \alpha_1 \cdot \alpha_0 \cdot \pi \succ \alpha_0 \cdot \pi$ and $t \star \lambda x. \alpha_1 \cdot \alpha_0 \cdot \pi \succ \alpha_1 \cdot \pi$, which is not possible because a term cannot reduce to both $ \alpha_0 \cdot \pi$ and $ \alpha_1 \cdot \pi$. Thus, such a term $t$ cannot exist. 
+\end{proof}
+
+
+Even if the axiom of induction is not realized for all terms of type $\iota$, it is realized for terms of the form $s^n 0$.
+
+\begin{lem}
+\label{lem recu}
+Let $\pole$ be a pole, $\rho$ an environment, and $P^{\iota \to o}$ a variable. If $u \Vdash \forall y^\iota. \ (Py \implies P(sy))$ and $v \Vdash P0$, then $(u)^n v \Vdash P(s^n 0)$ for all $n \in \N$.
+\end{lem}
+
+\begin{proof}
+Let's prove the property by induction. For $n = 0$:
+$$(u)^0 v = v \Vdash P0.$$
+Assume the property is true at rank $n$ and prove it for $n+1$:
+Since $u \Vdash \forall y^\iota. \ (Py \implies P(sy))$ and $v \Vdash P0$, we have, in particular, $u \Vdash P(s^n 0) \implies P(s^{n =1} 0)$. 
+$$(u)^{n+1} v = (u) (u)^n v$$
+As $(u)^n v \Vdash P(s^n 0)$ by the induction hypothesis and $u \Vdash P(s^n 0) \implies P(s^{n =1} 0)$, we conclude that $(u)^{n+1} v \Vdash P(s^{n+1})$.
+\end{proof}
+
+\begin{lem}
+\label{lem kri}
+For $n \in \N$, for all terms $f$ and $x$, $\Kri{n} f x \rbeta^* (f)^n x$.
+\end{lem}
+
+\begin{proof}
+By immediate induction.
+\end{proof}
+
+\begin{prop}
+For $n \in \N$, $\Kri{n} \Vvdash \int(s^n 0)$
+\end{prop}
+
+\begin{proof}
+Let $\pole$ be a pole, $\rho$ an environment, $P^{\iota \to o}$ a variable, and $n \in \N$. Let $u \Vdash \forall y^\iota. \ (Py \implies P(sy))$, $v \Vdash P0$, and $\pi \in \abss{P(s^{n} 0)}$.  
+$$\Kri{n} \star u \cdot v \cdot \pi \succ \lambda f. \lambda x. \Kri{n} f (f x) \star u \cdot v \cdot \pi \succ  \Kri{n} u (u v) \star \pi$$
+By Lemma \ref{lem kri}, $\Kri{n} u (u v) \rbeta^* (u)^n (u v) = (u)^{n+1} v$. So, $\Kri{n} u (u v) \star \pi \succ (u)^n v \star \pi$. By Lemma \ref{lem recu}, $(u)^n v \Vdash P(s^n 0)$, concluding the proof.
+\end{proof}
+
+\begin{lem}
+\label{lem suc}
+If $f$ is a term of type $\iota$ such that $\int{f}$ is realized (by a quasi-proof), then $\int(sf)$ is realized (by a quasi-proof).
+\end{lem}
+
+\begin{proof}
+Let $\pole$ be a pole, $\rho$ an environment, $P^{\iota \to o}$ a variable, $u$, $w$ two $\lambda_c$-terms such that $u \Vdash_\rho (\forall b^\iota. Pb \implies P(sb))$ and $w \Vdash_\rho P0$, and $t$ a $\lambda_c$-term (quasi-proof) such that $w \Vdash \int(f)$. We have $tuw \Vdash_\rho Pf$, so $u(tuw) \Vdash_\rho P(sf)$. Therefore, $\lambda x. \lambda y. x(txy) \Vdash \int(sf)$.
+\end{proof}
+
+\paragraph{Notation:} We denode $\forall a^\int. B$ for $\forall a^\iota. \int(a) \implies B$ and $\exists a^\int. B$ for $\exists a^\iota. \int(a) \land B$.
+
+\begin{theo}[Peano Arithmetic]
+The following formulas are in the theory of every pole:
+\begin{itemize}
+\setlength\itemsep{ -1 em}
+\item $\forall a^\int. sa \neq 0$\\
+\item $\forall a^\int. \forall b^\int. sa = sb \implies a = b$\\
+\item $\forall a^\int. a + 0 = a$\\
+\item $\forall a^\int. \forall b^\iota. a + sb = s(a + b)$\\
+\item $\forall a^\int. a \times 0 = 0$\\
+\item $\forall a^\int. \forall b^\iota. a \times sb = (a \times b) + a$\\
+\item $\forall a^\int. \int(a)$\\
+\item $\forall a^\int. a = 0 \lor \exists b^\int. sb = a$
+\end{itemize}
+\end{theo}
+
+\begin{proof}
+We need to show that $\forall a^\int. a= 0 \lor \exists b^\int. sb = a$ is indeed in the theory of every pole. Let $\pole$ be a pole, and $\rho$ an environment. Let $t$ be a $\lambda_c$-term such that $t \Vdash_\rho \int(a)$. Let $P := \lambda a^\iota. a = 0 \lor \exists b^\int. sb = a$. By closure (\ref{cloture}), there exists $t \in \Lambda_c$ such that $t \Vdash 0 = 0$. Therefore, $\lambda y. \lambda z. y t \Vdash_\rho P0$. Let $c$ be a term of sort $\iota$ such that $Pc$. If $c = 0$, then $P(sc)$ is true because $0$ is the predecessor of $sc$ and $\int(0)$. If $\exists b^\int. sb = c$, let $b$ be such a term; then $sb$ is a predecessor of $sc$, and by lemma \ref{lem suc}, $\int(sb)$. Thus, $\forall c^\iota. Pc \implies P(sc)$, and by closure, there exists $u \in \QP$ such that $u \Vdash \forall c^\iota. Pc \implies P(sc)$. Once again, by closure, we obtain $\forall a^\int. a= 0 \lor \exists b^\int. sb = a \in \Th(\pole)$.
+\end{proof}
+
+\begin{prop}[Stability of $\int$ by representable functions]
+Let $r \in \N \setminus \{0\}$ and $f_\N : \N^r \to \N$ be a function representable in $\PA_\omega$. Then the following formula is in the theory of every pole,
+$$\forall a_1^\int. \dots a_r^\int. \int(f(a_1, \dots, a_r))$$
+\end{prop}
+
+\begin{prop}[Well definition of representable predicates]
+Let $r \in \N \setminus \{0\}$ and $f_\N : \N^r \to \{0,1\}$ be a function representable in $\PA_\omega$. Then the following formula is in the theory of every pole,
+$$\forall a_1^\int. \dots a_r^\int. (f(a_1, \dots, a_r) = 0 \lor f(a_1, \dots, a_r) = 1)$$
+\end{prop}
+
+\begin{proof}
+The proof of these two propositions is in \cite{KrivineRC}.
+\end{proof}
+
+\clearpage
+\subsection{Realization of \( \DC \)}
+
+We will show that for any pole $\pole$, $\DC \in \Th(\pole)$. We will do this in three steps: first, we will show that the formula $\QNEAC$ is realized by a quasi-proof, then that $\PA_\omega \vdash \QNEAC \implies \NEAC$, and finally $\PA_\omega \vdash \NEAC\implies \DC$. The closure property (\ref{cloture}) will then allow us to conclude.
+
+\begin{defi}[$\QNEAC$]
+The Quasi Non-Extensional Axiom of Choice ($\QNEAC$) is the following scheme:
+$$\exists \chi^{(\tau \to o) \to \iota \to \tau}. \forall f^{\tau \to o}. (\exists a^\tau. fa) \implies (\exists n^\int. f(\chi f n))$$
+for any sort $\tau$.
+\end{defi}
+
+\begin{theo}
+\label{QNEAC}
+For any pole $\pole$, $\QNEAC \in \Th(\pole)$.
+\end{theo}
+
+\begin{proof}
+Let $\pole$ be a pole, $\rho$ an environment, and $\tau$ a sort. Let's show that $\neg \neg \QNEAC$ is realized by a quasi-proof.
+$$\QNEAC \iff \exists \chi^{(\tau \to o) \to \iota \to \tau}. \forall f^{\tau \to o}. (\forall n^\int. \neg f(\chi f n)) \implies (\forall a^\tau. \neg fa)$$
+Since we have a $\forall f^{\tau \to o}$, we can remove the negations in front of $f$, taking $f = \lambda a^\tau. \neg (fa)$. Thus,
+$$\QNEAC \iff \exists \chi^{(\tau \to o) \to \iota \to \tau}. \forall f^{\tau \to o}. (\forall n^\int. f(\chi f n)) \implies (\forall a^\tau. fa)$$
+For every integer $n \in \N$, we define
+$$P_n := \set{\pi \in \Pi \mid \xi_n \star \Kri{n} \cdot \pi \not \in \pole}$$
+There exists a function $X : \itp{\tau \to o} \to \N \to \itp{\tau}$\footnote{This is where we need the Axiom of Complete Choice in the metatheory} such that if $P_k \cap \abss{\forall a^\tau. fa}_\rho \neq \varnothing$, then $P_k \cap \abss{fa}_{\rho[a := X (f) (k)]} \neq \varnothing$.\\
+We define the environment $\rho' := \rho[\chi := X]$. Suppose $t \in \Lambda_c$ such that $t \Vdash_{\rho'} \forall n^\iota. \int(n) \implies f(\chi f n)$ and $\pi \in \abss{\forall a^\tau. fa}_{\rho'}$. We want to show that $\lambda x. (\quote) x x \star t \cdot \pi \in \pole$. Suppose this is not the case; then $\quote \star t \cdot t \cdot \pi \not \in \pole$, so $t \star \Kri{k} \cdot \pi \not \in \pole$ for some $k \in \N$ where $\xi_k = t$. Thus, $\pi \in P_k \cap \abss{\forall a^\tau. fa}_{\rho'}$. Therefore, there exists $\pi' \in P_k \cap \abss{f (\chi f k)_{\rho'}}$. Thus, $t \star \Kri{j} \star \pi' \in \pole$, which is a contradiction because the choice of $\pi$ was arbitrary, and we can choose $\pi = \pi'$. Therefore, $\lambda x. (\quote) x x \star t \cdot \pi \in \pole$.
+\end{proof}
+
+
+\paragraph{Notation :} We write $\exists ! a^\tau.Pa$ for $\exists a^\tau. Pa \land (\forall b^\tau. Pb \implies b = a)$
+
+\begin{defi}[$\NEAC$]
+The Non-Extensional Axiom of Choice ($\NEAC$) is the scheme:
+$$\exists \Psi^{(\tau \to o) \to \tau \to o}. \forall f^{\tau \to o}. (\exists a^\tau. fa) \implies \exists ! b^\tau.(\Psi f b \land f b)$$
+for any sort $\tau$.
+\end{defi}
+
+\begin{lem}[Well-Founded Order]
+\label{ordre bf}
+Let $\leq$ be the higher-order term of sort $\iota \to \iota \to o$ representing the function $\leq_\N$ (the usual order on integers). Then we have
+$$\PA_\omega \vdash \forall P^{\iota \to o}. (\exists n^\int. Pn) \implies \exists ! k^\int. \forall j^\int. Pk \implies Pj \implies (j \geq k = 1)$$
+\end{lem}
+
+\begin{proof}
+The proof is classical.
+\end{proof}
+
+\begin{theo}[$\QNEAC \implies \NEAC$]
+$\PA_\omega \vdash \QNEAC \implies \NEAC$.
+\end{theo}
+
+\begin{proof}
+Let $\tau$ be a sort and $\chi$ a witness for $\QNEAC$. We define
+$$\Psi := \lambda f^{\tau \to o}. \lambda a^\tau. \exists k^\iota. \int(k) \land (a = \chi f k) \land (\forall j^\int. f( \chi f j ) \implies (j \geq k = 1))$$
+Let's show that $\Psi$ is suitable. Let $f$ be of sort $\tau \to o$ such that $\exists a^\tau. fa$. By $\QNEAC$, there exists $k$ of sort $\iota$ such that $\int(k)$ and $f( \chi f k)$. By lemma \ref{ordre bf}, there exists a unique minimal $k$, which we call $k_0$. We set $b := \chi f k_0$, then we indeed have $\Psi f b$ and $f b$, and uniqueness follows from the uniqueness of $k_0$.
+\end{proof}
+
+\begin{lem}[Second Form of $\NEAC$]
+\label{NEAC 2}
+$$\NEAC \iff \exists \Psi'^{(\tau \to o) \to \tau \to o}. \forall f^{\tau \to o}.[( \exists a^\tau. fa) \implies \exists ! b^\tau.\Psi f b] \land [\forall b^\tau. \Psi f b \implies fb]$$
+\end{lem}
+
+\begin{proof}
+For the $\implies$ direction, it suffices to set $\Psi' := \lambda f^{\tau \to o}. \lambda a^\tau. \Psi f a \land fa$. The other direction is immediate.
+\end{proof}
+
+
+\begin{defi}[$\DC$]
+L' axiome du choix dépendant ($\DC$) est le schéma de formules suivant :
+$$\forall a_0^\tau. \forall R^{\tau \to \tau \to o}. (\forall a^\tau. \exists b^\tau. R a b) \implies$$
+$$ \exists u^{\iota \to \tau \to o}.  (\forall k^\int. \exists ! b^\tau. ukb)  \land  \ u 0 a_0 \ \land (\forall n^\iota. \forall b_1^\tau. \forall b_2^\tau. u n b_1 \implies u (sn) b_2 \implies R b_1 b_2)$$
+pour toute sorte $\tau$. 
+\end{defi}
+
+\begin{prop}[$\NEAC \implies \DC$]
+$\PA_\omega \vdash \NEAC \implies \DC$.
+\end{prop}
+
+\begin{proof}
+We will show that there exists a proof term $t$ of type $\NEAC \implies \DC$. Let $\tau$ be a type, $a_0^\tau$, $R^{\tau \to \tau \to o}$, and $\Psi^{(\tau \to o) \to \tau \to o}$ be higher-order variables. We define
+$$ u := \rec_{\tau \to o} (\lambda c^\tau. c = a_0) (\lambda q^\iota. \lambda P^{\tau \to o}. \Psi (\lambda d^\tau. \forall e^\tau. P e \implies \text{Red})) $$
+Let $P_1 := \forall k^\int. \exists ! b^\tau. ukb$, $P_2:= u 0 a_0$, and $P_3 := \forall n^\iota. \forall b_1^\tau. \forall b_2^\tau. u n b_1 \implies u (sn) b_2 \implies R b_1 b_2$. Using Lemma \ref{NEAC 2}, proving the existence of a proof term $t$ of type $\NEAC \implies \DC$ is equivalent to showing that the sequent:
+$$ x : \forall a^\tau. \exists b^\tau. R a b, \ y : \forall f^{\tau \to o}.[( \exists a^\tau. fa) \implies \exists ! b^\tau.\Psi f b] \land [\forall b^\tau. \Psi f b \implies fb] \vdash t : P_1 \land P_2 \land P_3 $$
+is derivable. This is equivalent to showing that there exist proof terms $t_1, t_2,$ and $t_3$ such that, for all $i \in \{1,2,3\}$, the sequent
+$$ x : \forall a^\tau. \exists b^\tau. R a b, \ y : \forall f^{\tau \to o}.[( \exists a^\tau. fa) \implies \exists ! b^\tau.\Psi f b] \land [\forall b^\tau. \Psi f b \implies fb] \vdash t_i: P_i $$
+is derivable.\\
+
+For $i = 2$:\\
+$$u 0 a_0 \longrightarrow (\lambda c^\tau. c = a_0) a_0 \longrightarrow a_0 = a_0$$
+There exists a proof term $t_2$ that satisfies this.
+
+For $i = 3$:\\
+Let $n^\iota$, $b_1^\tau$, and $b_2^\tau$ be higher-order variables, and $z_1 : u n b_1$ and $z_2 : u (sn) b_2$.  We observe that
+\begin{align*}
+u (sn) b_2 &\longrightarrow (\lambda q^\iota. \lambda P^{\tau \to o}. \Psi (\lambda d^\tau. \forall e^\tau. P e \implies \text{Red}) n (u n) b_2\\
+&\longrightarrow \Psi (\lambda d^\tau. \forall e^\tau. (un) e \implies \text{Red}) b_2
+\end{align*}
+Since $x,y,z_1,z_2 \vdash z_2 : u (sn) b_2$, we can deduce that there exists a proof term $h$ such that the sequent
+$$ x,y,z_1,z_2 \vdash h: \Psi (\lambda d^\tau. \forall e^\tau. (un) e \implies \text{Red}) b_2 $$
+is derivable. Therefore, the sequent
+$$ x,y,z_1,z_2 \vdash (\pi_2 y) h: (\lambda d^\tau. \forall e^\tau. (un) e \implies \text{Red}) b_2 $$
+is derivable. Similarly, there exists a proof term $h'$ such that the sequent
+$$ x,y,z_1,z_2 \vdash h': (un) b_1 \implies Rb_1b_2 $$
+is derivable. Thus,
+$$ x,y \vdash \lambda z_1. \lambda z_2. h'z_1: unb_1 \implies u(sn)b_2\implies Rb_1b_2 $$
+is derivable. Since $n$, $b_1$, and $b_2$ are free in the context, we have
+$$ x,y \vdash \lambda z_1. \lambda z_2. h'z_1: \forall n^\iota. \forall b_1^\tau. \forall b_2^\tau. u n b_1 \implies u (sn) b_2 \implies Rb_1 b_2 $$
+
+For $i = 1$:\\
+Let $k^\iota$ be a higher-order variable, $i : \int(k)$, and let $F := \lambda k^\int. \exists ! b^\tau. ukb$. Since for all $b$, $u 0 b \longrightarrow b = a_0$, there exists a proof term $h$ such that $x,y,i \vdash h : F0$ is derivable. Let $c^\iota$ and $b^\tau$ be two higher-order variables, $z : Fc$, and $z' : (ucb) \land (\forall d^\tau. ucd \implies c =d)$. Specializing $x$ to $b$ yields $b'$ such that $Rbb'$. Using $z'$, we obtain that $\exists e^\tau. uce \implies Reb' \iff ucb \implies Rbb'$ because the condition $uce$ is false except for $e = b$. We thus show that there exists $h$ a proof term such that the sequent
+$$ x,y,i,z' \vdash h : \exists a^\tau. (\lambda d^\tau \forall e^\tau. (uc) e \implies \text{Red}) a $$
+is derivable. Therefore,
+$$ x,y,i,z' \vdash (\pi_1y) h : \exists ! b''^\tau. \Psi (\lambda d^\tau \forall e^\tau. (uc) e \implies \text{Red}) b'' $$
+Now $u (sc) b'' \longrightarrow \Psi (\lambda d^\tau \forall e^\tau. (uc) e \implies \text{Red}) b''$, so there exists a proof term $h'$ such that
+$$ x,y,i,z' \vdash h' : \exists ! b''^\tau. u(sc) b'' $$
+Since $x,y,i,z \vdash z : Fc$ is derivable, we have that
+$$ x,y,i,z \vdash h' : \exists ! b''^\tau. u(sc) b'' =: F(sc) $$
+is derivable, and thus,
+$$ x,y,i \vdash \lambda z. h' : Fc \implies F(sc) $$
+is derivable. Since $c$ is free in the context, we have
+$$ x,y, i \vdash  \lambda z. h' : \forall c^\iota. Fc \implies F(sc) $$
+Thus,
+$$ x,y \vdash \lambda i. i (\lambda z. h') h : Fk $$
+is derivable. Since $k$ is free in the context, we have
+$$ x,y \vdash \lambda i. i (\lambda z. h') h : P_3 $$
+Therefore, we have shown that there exist proof terms $t_1$, $t_2$, and $t_3$ that satisfy the conditions. 
+\end{proof}
+
+By the closure property \ref{cloture}, we can conclude that $\DC$ is within the theory of every pole.
+
+\clearpage
+
+
+\bibliographystyle{plain}
+\bibliography{citations_M1_rea}
+
+\end{document}
+
