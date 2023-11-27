@@ -104,9 +104,9 @@ Je remercie chaleureusement M.Geoffroy de m'avoir permis de réaliser ce projet 
 \section{Introduction}
 \label{introduction}
 
-Il existe plusieurs notions de réalisabilité, elles ont en commun l'idée de faire correspondre à chaque formule d'un système donné un ensemble d'éléments. Ces éléments représentent d'une certaine manière le contenu calculatoire de la preuve des formules. Ces notions de réalisabilité sont des outils qui permettent d'étudier des systèmes logiques. Dans ce mémoire, on s'intéressera à la notion de réalisabilité classique comme développée dans les articles de Krivine \cite{KrivineRC} \cite{KrivineRA2}. On utilisera la réalisabilité classique pour étudier l'arithmétique d'ordre supérieur : $\PA_\omega$. $\PA_\omega$ est une théorie des types qui étend $\PA$ en permettant de construire des prédicats sur les entiers, les parties d'entiers, les parties de parties d'entiers...\\
+Il existe plusieurs notions de réalisabilité, elles ont en commun l'idée de faire correspondre à chaque formule d'un système donné un ensemble d'éléments. Ces éléments représentent d'une certaine manière le contenu calculatoire des formules. Ces notions de réalisabilité sont des outils qui permettent d'étudier des systèmes logiques. Dans ce mémoire, on s'intéressera à la notion de réalisabilité classique comme développée dans les articles de Krivine \cite{KrivineRC} \cite{KrivineRA2}. On utilisera la réalisabilité classique pour étudier l'arithmétique d'ordre supérieur : $\PA_\omega$. $\PA_\omega$ est une théorie des types qui étend $\PA$ en permettant de construire des prédicats sur les entiers, les parties d'entiers, les parties de parties d'entiers...\\
 
-Dans un premiers temps nous donnerons une présentation de la réalisabilité classique, puis nous définirons le système $\PA_\omega$ et montrerons qu'on peut le munir d'une certaine structure qu'on appelle modèle de réalisabilité. Notre but sera de montrer que dans un modèle de réalisabilité de $\PA_\omega$, l'axiome du choix dépendant, $\DC$, est dans la théorie de tout $\pole$ (notion qu'on définira par la suite).\\
+Dans un premiers temps nous donnerons une présentation de la réalisabilité classique, puis nous définirons le système $\PA_\omega$ et montrerons qu'on peut le munir d'une certaine structure qu'on appelle modèle de réalisabilité. Notre but sera de construire un modèle de réalisabilité de $\PA_\omega$, dans lequel l'axiome du choix dépendant, $\DC$, est dans la théorie de tout pôle (notion qu'on définira par la suite).\\
 
 La présentation que nous donnons de $\PA_\omega$ est grandement inspirée de l'article de Miquel \cite{MiquelF} et utilise un système de preuve inspiré de l'article de Geoffroy \cite{Geof}. La construction proposée d'un modèle de réalisabilité de $\PA_\omega$ est celle présenté dans \cite{MiquelF} modifiée pour correspondre au système de preuve que nous utilisons. Une grande partie des résultats montrés sont inspirés de résultats similaires dans les articles de Krivine \cite{KrivineRC} \cite{KrivineRA2}. La preuve de la réalisation de $\DC$, bien qu'inspirée de celle donné dans les articles de Krivine, est nouvelle car nous montrons que $\PA_\omega$ prouve que l'axiome du choix non extensionnel implique le choix dépendant. On se placera dans $\mathrm{ZFC}$.
 
@@ -236,12 +236,12 @@ On note $t \Vdash A$ pour $t \in \abs{A}$ et on le lit "$t$ réalise $A$".
 Il nous reste maintenant à attribuer à chaque type une valeur de fausseté:
 \begin{itemize}
 \setlength\itemsep{ -1 em}
-\item $\abss{1} := \Pi$\\
+\item $\abss{1} := \set{\epsilon}$\\
 \item Si $A$ et $B$ sont des types alors $\abss{A \to B} := \abs{A} \cdot \abss{B}
  := \set{ t \cdot \pi \in \Pi \mid t \in \abs{A} \text{ et } \pi \in \abss{B}}$
 \end{itemize}
 
-On a donc $\abs{1} := \set{t \in \Lambda_c \mid \forall \pi \in \Pi, \ t \star \pi \in \pole} = \set{t \in \Lambda_c \mid \forall \pi \in \Pi, \ t \star \pi \succ 0 \star \epsilon}$.
+On a donc $\abs{1} := \set{t \in \Lambda_c \mid \forall \pi \in \abss{1}, \ t \star \pi \in \pole} = \set{t \in \Lambda_c \mid t \star \epsilon \succ 0 \star \epsilon}$.
 
 \begin{lem}
 \label{lem_beta}
@@ -252,7 +252,7 @@ Soit $t, u \in \Lambda_c$ ne contenant pas $\cc$ et $\k_\pi$ comme sous termes, 
 Si $t = u$ alors la propriété est vraie. Si non, comme $t$ ne contient pas $\cc$ et $\k_\pi$ comme sous termes, les seules règles d'exécutions applicables sont \textit{(Push)} et \textit{(Grab)}. Comme la pile est $\epsilon$ et que $t$ ne contient ni $\cc$ ni $\k_\pi$, la suite de règles d'exécutions qui permet d'obtenir $u \star \epsilon$ à partir de $t \star \epsilon$ ne peut être formé que d'application successives de \textit{(Push)} puis \textit{(Grab)}, ce qui correspond à une étape de $\beta$-réduction faible de tête, ce qui conclut. 
 \end{proof}
 
-Si on montre que si $\vdash t : 1$ est dérivable alors $t \Vdash 1$, alors on aura montré la propriété voulue car on aura en particulier $t \star \epsilon \succ 0 \star \epsilon$ ce qui implique $t \rbeta^* 0$ par le lemme \ref{lem_beta}.\\
+Montrer que si $\vdash t : 1$ est dérivable alors $t \Vdash 1$, est suffisant pour conclure. En effet, si on a $t \Vdash 1$, par définition on a $t \star \epsilon \succ 0 \star \epsilon$ ce qui implique $t \rbeta^* 0$ par le lemme \ref{lem_beta}.\\
 
 Nous allons montrer une propriété plus forte qui est la propriété d'adéquation\footnote{nous utiliserons dans la suite une autre définition légèrement différente de la propriété d'adéquation}: si $x_1 : A_1, \dots, x_n : A_n \vdash t : A$ est dérivable alors $(u_1 \Vdash A_1 \land \dots \land u_n \Vdash A_n) \implies t[ \bar{x} := \bar{u}]\footnote{$t[ \bar{x} := \bar{u}]$ désigne la substitution modulo $\alpha$-équivalence des $x_1, \dots, x_n$ par respectivement $u_1, \dots, u_n$.} \Vdash A$, pour $x_1, \dots, x_n$ des variables et $u_1, \dots, u_n$ des $\lambda_c$-termes. On la démontre par induction sur la structure des dérivations:
 
@@ -270,7 +270,6 @@ On remarque en utilisant l'instruction \textit{(Push)} que
 $$\forall \pi \in \abss{B}, \ (t[\bar{x} := \bar{v}])u[\bar{x} := \bar{v}] \star \pi \succ t[\bar{x} := \bar{v}] \star u[\bar{x} := \bar{v}] \cdot \pi$$
 La saturation et les propriétés de la substitution nous donnent 
 $$\forall \pi \in \abss{B}, \ (tu)[\bar{x} := \bar{v}] \star \pi \in \pole$$
-On a donc bien l'adéquation pour $x_1 : C_1, \dots, x_n : C_n \vdash tu : B$.\\
 
 \item Supposons $x_1 : A_1, \dots, x_n : A_n, y : A \vdash t : B$ dérivable ou $y$ est une variable et supposons $u_1 \Vdash A_1, \dots, u_n \Vdash A_n$. Soit $t' \in \abs{A}$ et $\pi \in \abss{B}$ on veut montrer que $(\lambda y.t)[\bar{x} := \bar{u}] \star t' \cdot \pi \in \pole$ (ie. $(\lambda y.t)[\bar{x} := \bar{u}] \Vdash A \to B$).\\
 La règle \textit{(Grab)} nous donne:
@@ -282,7 +281,8 @@ $$(\lambda y.t)[\bar{x} := \bar{u}] \star t' \cdot \pi \succ  t[\bar{x} := \bar{
 Par saturation on a bien le résultat voulu. Ce qui conclut la preuve de l'adéquation.
 \end{itemize}
 
-\begin{rmqs} La propriété clé est l'adéquation, elle est essentielle à toute notion de réalisabilité. Dans le cas (simple) de ce système les termes $\cc$ et $\k$ n'intervient pas. Cela est prévisible car ils servent à modéliser la logique classique, or le système étudié ici est intuitionniste.\\
+\begin{rmqs} La propriété clé est l'adéquation, elle est essentielle à toute notion de réalisabilité.\\
+Dans le cas (simple) de ce système les termes $\cc$ et $\k$ n'intervient pas. Cela est prévisible car ils servent à modéliser la logique classique, or le système étudié ici est intuitionniste.\\
 Si l'on est dans un cas où l'on a l'adéquation, pour montrer qu'un système est cohérent il suffit de montrer que l'ensemble des valeurs de vérité de $\bot$ est vide (ie. $\abs{\bot} = \varnothing$). En effet, s'il y a un terme $t$ tel que $\vdash t : \bot$ est dérivable, par adéquation $t \Vdash \bot$ et donc $\abs{\bot} \neq \varnothing$. 
 \end{rmqs}
 
@@ -320,7 +320,7 @@ On va définir des règles pour former des termes de sorte $o$. Les termes de so
 \setlength\itemsep{ -1 em}
 \item Si $t$ et $u$ sont deux termes d'ordre supérieur de sorte $\tau$ alors $t \neq u$ est sorte $o$.\\
 \item Si $A$ et $B$ sont des formules alors $A \implies B$ est de sorte $o$.\\
-\item Si $A$ est de sorte $o$ et $a^\tau$ est une variable de sorte $\tau$ alors $\forall x^\tau. A$ est de sorte $o$.
+\item Si $A$ est de sorte $o$ et $a^\tau$ est une variable de sorte $\tau$ alors $\forall a^\tau. A$ est de sorte $o$.
 \end{itemize}
 \end{defi}
 
@@ -415,7 +415,7 @@ A \iff B \ :=& \ (A \implies B) \land (B \implies A)\\
 \exists a^\tau. A \ :=& \ \forall b^o.(\forall a^\tau. (A \implies b) \implies b)\\
 f = g \ :=& \ \neg f \neq g
 \end{align*}
-où $a^0$ est une variable qui n'apparait pas dans les formules. 
+où $a^o$ est une variable qui n'apparait pas dans les formules. 
 \end{defi}
 
 On peut penser que $\PA_\omega$ est semblable à l'arithmétique de Peano, cependant on remarque que la majorités des axiomes de $\PA$ ne sont pas présents. En effet, même si on est tenté de penser que $0$ et $s$ sont le zéro la fonction successeur de $\PA$, ce n'est pas le cas. $\PA_\omega$ est une théorie bien plus générale que $\PA$, comme on verra dans \ref{non rec}. 
@@ -535,7 +535,7 @@ Il existe plusieurs notions différentes de modèles en logique. De manière gé
 
 \begin{defi}[Termes, Pile et machine de Krivine pour $\PA_\omega$]
 On définit (comme dans \ref{termes et piles}) les ensembles de termes $\Lambda$ et de piles $\Pi$ avec $\Pi_0 := \set{\epsilon_n}_{n \in \N}$ et $\mathcal{I} := \set{\cc, \mathbf{quote}}$. Comme $\Lambda$ est dénombrable on fixe une fonction bijective $\xi_{\square} : \N \to \Lambda_c$.\\
-Soit $\succ$ la machine de Krivine minimale sur $\Lambda \star \Pi$ avec les règles d'exécutions \textit{(Push)}, \textit{(Grab)}, \textit{(Save)} et \textit{(Restore)} ainsi que la règle :
+Soit $\succ$ la machine de Krivine minimale sur $\Lambda \star \Pi$ sur les règles d'exécutions \textit{(Push)}, \textit{(Grab)}, \textit{(Save)} et \textit{(Restore)} ainsi que la règle :
 $$\text{(Evaluation)} \quad \mathbf{quote} \star \xi_n \cdot t \cdot \pi \succ t \star \Kri{n} \cdot \pi$$
 \end{defi}
 
@@ -647,7 +647,7 @@ On fixe $\pole$ un pôle. Par induction sur la structure des dérivation des ter
 \setlength\itemsep{ -1 em}
 \item[(1)] Soit $\rho$ un environnement. Si $u \Vdash_\rho A$ alors $u = x[x := u] \Vdash_\rho A$.\\
 
-\item[(2)] Soit $\rho$ un environnement. Soit $x_1 : A_1, \dots, x_n : A_n \vdash t : A \to B$ et $x_1 : A_1, \dots, x_n : A_n \vdash u : A$ dérivables. Supposons $v_i \Vdash_\rho A_i$. On a donc, par hypothèse d'induction : $t[ \bar{x} := \bar{v}] \Vdash_\rho (A \to B)$ et $u[\bar{x} := \bar{v}] \Vdash_\rho A$. On veut montrer que $(tu)[\bar{x} := \bar{v}] \Vdash_\rho B$. En dépliant la définition on obtient : 
+\item[(2)] Soit $\rho$ un environnement. Soit $x_1 : A_1, \dots, x_n : A_n \vdash t : A \implies B$ et $x_1 : A_1, \dots, x_n : A_n \vdash u : A$ dérivables. Supposons $v_i \Vdash_\rho A_i$. On a donc, par hypothèse d'induction : $t[ \bar{x} := \bar{v}] \Vdash_\rho A \implies B$ et $u[\bar{x} := \bar{v}] \Vdash_\rho A$. On veut montrer que $(tu)[\bar{x} := \bar{v}] \Vdash_\rho B$. En dépliant la définition on obtient : 
 $$\forall u' \in \abs{A}_\rho, \forall \pi \in \abss{B}_\rho, \ t[\bar{x} := \bar{v}] \star u' \cdot \pi \in \pole$$
 Donc en particulier
 $$ \forall \pi \in \abss{B}_\rho, \ t[\bar{x} := \bar{v}] \star u[\bar{x} := \bar{v}] \cdot \pi \in \pole$$
@@ -657,7 +657,7 @@ La saturation et les propriétés de la substitution nous donnent
 $$\forall \pi \in \abss{B}_\rho, \ (tu)[\bar{x} := \bar{v}] \star \pi \in \pole$$
 On a donc bien $(tu)[\bar{x} := \bar{v}] \Vdash_\rho B$.\\
 
-\item[(3)] Soit $\rho$ un environnement. Soit $x_1 : A_1, \dots, x_n : A_n, y : A \vdash t : B$ dérivable. Soit $u_i \Vdash_\rho A_i$, $t' \Vdash_\rho A$ et $\pi \in \abss{B}_\rho$. On veut montrer que $(\lambda y.t)[\bar{x} := \bar{u}] \star t' \cdot \pi \in \pole$ (donc $(\lambda y.t)[\bar{x} := \bar{u}] \Vdash_\rho (A \to B)$).\\
+\item[(3)] Soit $\rho$ un environnement. Soit $x_1 : A_1, \dots, x_n : A_n, y : A \vdash t : B$ dérivable. Soit $u_i \Vdash_\rho A_i$, $t' \Vdash_\rho A$ et $\pi \in \abss{B}_\rho$. On veut montrer que $(\lambda y.t)[\bar{x} := \bar{u}] \star t' \cdot \pi \in \pole$ (donc $(\lambda y.t)[\bar{x} := \bar{u}] \Vdash_\rho A \implies B$).\\
 La règle \textit{(Grab)} nous donne:
 $$(\lambda y.t)[\bar{x} := \bar{u}] \star t' \cdot \pi \succ  t[\bar{x} := \bar{u}][y := t'] \star \pi $$
 On a $t' \Vdash_\rho A$ et par hypothèse d'induction on a
@@ -692,7 +692,7 @@ Pour tout pôle $\pole$, $\Th(\pole)$ est clos par déduction dans $\PA_\omega$.
 \end{lem}
 
 \begin{proof}
-Pour prouver ce résultat il suffit de reprendre le théorème d'adéquation en rajoutant la conditions que les $\lambda_c$-termes doivent être des quasi-preuves. 
+Pour prouver ce résultat il suffit de reprendre le théorème d'adéquation en rajoutant la condition que les $\lambda_c$-termes doivent être des quasi-preuves. 
 \end{proof}
 
 Pour pouvoir montrer que $\DC$ est la dans théorie de tout $\pole$, nous allons avoir besoins de résultats sur l'arithmétique de $\PA_\omega$.
@@ -875,7 +875,7 @@ Soit $n \in \N$ alors $\Kri{n} \Vvdash \int(s^n 0)$
 \end{prop}
 
 \begin{proof}
-Soit $\pole$ un pôle, $\rho$ un environnement, $P^{\iota \to o}$ une variable et $n \in \N$. Soit $u \Vdash \forall y^\iota. \ (Py \implies P(sy))$, $v \Vdash P0$ et $\pi \in \abss{P(s^{n+1} 0)}$.  
+Soit $\pole$ un pôle, $\rho$ un environnement, $P^{\iota \to o}$ une variable et $n \in \N$. Soit $u \Vdash \forall y^\iota. \ (Py \implies P(sy))$, $v \Vdash P0$ et $\pi \in \abss{P(s^{n} 0)}$.  
 $$\Kri{n} \star u \cdot v \cdot \pi \succ \lambda f. \lambda x. \Kri{n} f (f x) \star u \cdot v \cdot \pi \succ  \Kri{n} u (u v) \star \pi$$
 Par le lemme \ref{lem kri} $\Kri{n} u (u v) \rbeta^* (u)^n (u v) = (u)^{n+1} v$. Donc $\Kri{n} u (u v) \star \pi \succ (u)^n v \star \pi$. Par le lemme \ref{lem recu} $(u)^n v \Vdash P(s^n 0)$ ce qui conclut.
 \end{proof}
@@ -1005,7 +1005,7 @@ $\PA_\omega \vdash \NEAC \implies \DC$.
 \begin{proof}
 Nous allons montré qu'il existe un terme de preuve $t$ de type $\NEAC \implies \DC$. Soit $\tau$ une sorte, $a_0^\tau$, $R^{\tau \to \tau \to o}$ et $\Psi^{(\tau \to o) \to \tau \to o}$ des variables d'ordre supérieur. On définit 
 $$ u := \rec_{\tau \to o} (\lambda c^\tau. c = a_0) (\lambda q^\iota. \lambda P^{\tau \to o}. \Psi (\lambda d^\tau. \forall e^\tau. P e \implies Red))$$
-On note $P_1 := \forall k^\int. \exists ! b^\tau. ukb$, $P_2:= u 0 a_0$ et $P_3 := \forall n^\iota. \forall b_1^\tau. \forall b_2^\tau. u n b_1 \implies u (sn) b_2)\implies R b_1 b_2$. Par le lemme \ref{NEAC 2}, montrer qu'il existe un terme de preuve $t$ de type $\NEAC \implies \DC$ reviens à montrer que le séquent :
+On note $P_1 := \forall k^\int. \exists ! b^\tau. ukb$, $P_2:= u 0 a_0$ et $P_3 := \forall n^\iota. \forall b_1^\tau. \forall b_2^\tau. u n b_1 \implies u (sn) b_2 \implies R b_1 b_2$. Par le lemme \ref{NEAC 2}, montrer qu'il existe un terme de preuve $t$ de type $\NEAC \implies \DC$ reviens à montrer que le séquent :
 $$ x : \forall a^\tau. \exists b^\tau. R a b, \ y : \forall f^{\tau \to o}.[( \exists a^\tau. fa) \implies \exists ! b^\tau.\Psi f b] \land [\forall b^\tau. \Psi f b \implies fb] \vdash t : P_1 \land P_2 \land P_3$$
 est dérivable. Cela revient à montrer qu'il existe des termes de preuves $t_1, t_2$ et $t_3$ tel que pour tout $i \in \set{1,2,3}$ le séquent 
 $$x : \forall a^\tau. \exists b^\tau. R a b, \ y : \forall f^{\tau \to o}.[( \exists a^\tau. fa) \implies \exists ! b^\tau.\Psi f b] \land [\forall b^\tau. \Psi f b \implies fb] \vdash t_i: P_i $$
